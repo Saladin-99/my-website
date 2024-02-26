@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import RootLayout from "@/app/layout";
 
 export default function Home() {
+  const [hoveredItem, setHoveredItem] = useState(null);
   return (
     <RootLayout>
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -14,33 +16,65 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        
-      </div>
+      <div className="relative flex place-items-center justify-center before:absolute before:-z-20 before:h-[180px] before:w-full sm:before:w-[240px] before:left-1/2 before:-translate-x-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40 after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:left-1/2 after:-translate-x-1/2 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] after:dark:bg-gradient-to-br after:dark:from-transparent after:dark:to-blue-700 after:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href=""
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            About me{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Detailed information about my skills, experience and education. You can also find my CV here.
-          </p>
-        </a>
+          {hoveredItem === 'about' && (
+            <div className="w-full max-w-[30ch]">
+              <h2 className={"mb-6 text-2xl font-semibold"}>
+                About me
+              </h2>
+              <p className={`m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500`}>
+                Detailed information about my skills, experience and education. You can also find my CV here.
+              </p>
+            </div>
+          )}
+          {hoveredItem === 'contact' && (
+            <div className="w-full max-w-[30ch]">
+              <h2 className={"mb-6 text-2xl font-semibold"}>
+                Contact
+              </h2>
+              <p className={`m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500`}>
+                Ways to reach out to me.
+              </p>
+            </div>
+          )}
+          {hoveredItem === 'portfolio' && (
+            <div className="w-full max-w-[30ch]">
+              <h2 className={"mb-6 text-2xl font-semibold"}>
+                Portfolio
+              </h2>
+              <p className={`m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500`}>
+                My Github Repo.
+              </p>
+            </div>
+          )}
+  </div>
+
+
+        <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
+          <a
+            href=""
+            className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={() => setHoveredItem('about')}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
+            <h2 className={`mb-3 text-2xl font-semibold`}>
+              About me{" "}
+              <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                -&gt;
+              </span>
+            </h2>
+          </a>
 
         <a
           href=""
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
           target="_blank"
           rel="noopener noreferrer"
+          onMouseEnter={() => setHoveredItem('contact')}
+          onMouseLeave={() => setHoveredItem(null)}
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Contact{" "}
@@ -48,9 +82,6 @@ export default function Home() {
               -&gt;
             </span>
           </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Ways to reach out to me.
-          </p>
         </a>
 
         <a
@@ -58,16 +89,15 @@ export default function Home() {
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
+          onMouseEnter={() => setHoveredItem('portfolio')}
+          onMouseLeave={() => setHoveredItem(null)}
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            Portofolio{" "}
+            Portfolio{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            My Github Repo.
-          </p>
         </a>
       </div>
     </main>

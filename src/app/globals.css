@@ -35,3 +35,51 @@ body {
 .text-3d {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+.contact-panel {
+  position: fixed;
+  bottom: -20%; /* Initially position off the screen */
+  left: 30%;
+  width: 40%;
+  height: 20%; /* Set desired height */
+  background-color: black;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  z-index: 1000; /* Ensure the panel appears in the foreground */
+  animation: slideUp 0.1s ease forwards; /* Apply animation effect */
+}
+
+@keyframes slideUp {
+  from {
+    bottom: -20%; /* Start position */
+  }
+  to {
+    bottom: 40%; /* End position */
+  }
+}
+/*.contact-panel.open {
+
+}*/
+
+.panel-content {
+  padding: 20px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 999; /* Ensure the backdrop appears behind the contact panel */
+}

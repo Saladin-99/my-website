@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import RootLayout from "@/app/layout";
+import ContactPanel from '@/components/contact-panel';
 
 export default function Home() {
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [contactPanelOpen, setContactPanelOpen] = useState(false);
   return (
     <RootLayout>
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -48,15 +50,12 @@ export default function Home() {
               </p>
             </div>
           )}
-  </div>
+      </div>
 
 
         <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
           <a
-            href=""
             className={`group rounded-lg border border-transparent px-5 py-4 transition-colors ${hoveredItem === 'about' ? 'border-gray-300 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800/30' : ''}`}
-            target="_blank"
-            rel="noopener noreferrer"
             onMouseEnter={() => setHoveredItem('about')}
             onMouseLeave={() => setHoveredItem(null)}
             onTouchStart={() => setHoveredItem('about')} // Touch event
@@ -71,15 +70,14 @@ export default function Home() {
           </a>
 
         <a
-          href=""
           className={`group rounded-lg border border-transparent px-5 py-4 transition-colors ${hoveredItem === 'contact' ? 'border-gray-300 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800/30' : ''}`}
-          target="_blank"
-          rel="noopener noreferrer"
           onMouseEnter={() => setHoveredItem('contact')}
           onMouseLeave={() => setHoveredItem(null)}
           onTouchStart={() => setHoveredItem('contact')} // Touch event
           onTouchEnd={() => setHoveredItem(null)} // Touch event
-        >
+
+          onClick={() => setContactPanelOpen(true)}
+          >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Contact{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
@@ -87,7 +85,8 @@ export default function Home() {
             </span>
           </h2>
         </a>
-
+        {contactPanelOpen && <ContactPanel isOpen={contactPanelOpen} onClose={() => setContactPanelOpen(false)} />}
+        {contactPanelOpen && <div className="backdrop" onClick={() => setContactPanelOpen(false)}></div>}
         <a
           href="https://github.com/Saladin-99?tab=repositories"
           className={`group rounded-lg border border-transparent px-5 py-4 transition-colors ${hoveredItem === 'portfolio' ? 'border-gray-300 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800/30' : ''}`}

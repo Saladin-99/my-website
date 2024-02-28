@@ -24,7 +24,7 @@ export default function Home() {
                 About me
               </h2>
               <p className={`m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500`}>
-                Detailed information about my skills, experience and education. You can also find my CV here.
+                Detailed information about my education, skills and experience. You can also find my CV here.
               </p>
             </div>
           )}
@@ -59,6 +59,8 @@ export default function Home() {
             rel="noopener noreferrer"
             onMouseEnter={() => setHoveredItem('about')}
             onMouseLeave={() => setHoveredItem(null)}
+            onTouchStart={() => handleInteraction('about')} // Touch event
+            onTouchEnd={() => handleInteraction(null)} // Touch event
           >
             <h2 className={`mb-3 text-2xl font-semibold`}>
               About me{" "}
@@ -75,6 +77,8 @@ export default function Home() {
           rel="noopener noreferrer"
           onMouseEnter={() => setHoveredItem('contact')}
           onMouseLeave={() => setHoveredItem(null)}
+          onTouchStart={() => handleInteraction('contact')} // Touch event
+          onTouchEnd={() => handleInteraction(null)} // Touch event
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Contact{" "}
@@ -91,6 +95,8 @@ export default function Home() {
           rel="noopener noreferrer"
           onMouseEnter={() => setHoveredItem('portfolio')}
           onMouseLeave={() => setHoveredItem(null)}
+          onTouchStart={() => handleInteraction('portfolio')} // Touch event
+          onTouchEnd={() => handleInteraction(null)} // Touch event
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Portfolio{" "}

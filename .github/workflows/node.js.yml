@@ -58,10 +58,8 @@ jobs:
         run: npm ci
       - name: Build with Next.js
         run: npx next build
-      - name: change directory
-        run: cd src
-      - name: Check existing directories
-        run: ls -d */
+      - name: Check contents of src directory
+        run: ls -l ./src
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

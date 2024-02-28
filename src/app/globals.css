@@ -38,7 +38,7 @@ body {
 
 .contact-panel {
   position: fixed;
-  bottom: -20%; /* Initially position off the screen */
+  bottom: 40%; /* Initially position off the screen */
   left: 30%;
   width: 40%;
   height: 20%; /* Set desired height */
@@ -46,15 +46,16 @@ body {
   border: 1px solid #ccc;
   border-radius: 8px;
   z-index: 1000; /* Ensure the panel appears in the foreground */
-  animation: slideUp 0.1s ease forwards; /* Apply animation effect */
+  opacity: 0; /* Initially hide the panel */
+  animation: fadeIn 0.35s ease forwards; /* Apply animation effect */
 }
 
-@keyframes slideUp {
+@keyframes fadeIn {
   from {
-    bottom: -20%; /* Start position */
+    opacity: 0; /* Start with opacity 0 */
   }
   to {
-    bottom: 40%; /* End position */
+    opacity: 1; /* End with opacity 1 */
   }
 }
 /*.contact-panel.open {

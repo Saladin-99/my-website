@@ -59,8 +59,8 @@ export default function Home() {
             rel="noopener noreferrer"
             onMouseEnter={() => setHoveredItem('about')}
             onMouseLeave={() => setHoveredItem(null)}
-            onTouchStart={() => handleInteraction('about')} // Touch event
-            onTouchEnd={() => handleInteraction(null)} // Touch event
+            onTouchStart={() => setHoveredItem('about')} // Touch event
+            onTouchEnd={() => setHoveredItem(null)} // Touch event
           >
             <h2 className={`mb-3 text-2xl font-semibold`}>
               About me{" "}
@@ -77,8 +77,8 @@ export default function Home() {
           rel="noopener noreferrer"
           onMouseEnter={() => setHoveredItem('contact')}
           onMouseLeave={() => setHoveredItem(null)}
-          onTouchStart={() => handleInteraction('contact')} // Touch event
-          onTouchEnd={() => handleInteraction(null)} // Touch event
+          onTouchStart={() => setHoveredItem('contact')} // Touch event
+          onTouchEnd={() => setHoveredItem(null)} // Touch event
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Contact{" "}
@@ -95,8 +95,8 @@ export default function Home() {
           rel="noopener noreferrer"
           onMouseEnter={() => setHoveredItem('portfolio')}
           onMouseLeave={() => setHoveredItem(null)}
-          onTouchStart={() => handleInteraction('portfolio')} // Touch event
-          onTouchEnd={() => handleInteraction(null)} // Touch event
+          onTouchStart={() => setHoveredItem('portfolio')} // Touch event
+          onTouchEnd={() => setHoveredItem(null)} // Touch event
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Portfolio{" "}

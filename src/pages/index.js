@@ -73,8 +73,7 @@ export default function Home() {
             </span>
           </h2>
         </a>
-        {contactPanelOpen && <ContactPanel isOpen={contactPanelOpen} onClose={() => setContactPanelOpen(false)} />}
-        {contactPanelOpen && <div className="backdrop" onClick={() => setContactPanelOpen(false)}></div>}
+        {contactPanelOpen && <ContactPanel onClose={() => setContactPanelOpen(false)} />}
         <a
           href="https://github.com/Saladin-99?tab=repositories"
           className={`group rounded-lg border border-transparent px-5 py-4 transition-colors ${hoveredItem === 'portfolio' ? 'border-gray-300 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800/30' : ''}`}

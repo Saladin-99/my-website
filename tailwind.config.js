@@ -7,6 +7,25 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        'slide-in': 'slide-in 0.3s ease-out forwards',
+        'slide-out': 'slide-out 0.3s ease-out forwards',
+        'fadeIn': 'fadeIn 0.35s ease forwards',
+      },
+      keyframes: {
+        'slide-in': {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        'slide-out': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(100%)' },
+        },
+        fadeIn: {
+          'from': { opacity: 0 },
+          'to': { opacity: 1 },
+        },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

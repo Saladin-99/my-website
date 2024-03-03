@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import RootLayout from "@/app/layout";
 import ContactPanel from '@/components/contact-panel';
+import AboutPanel from '@/components/about-panel'
 
 export default function Home() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [contactPanelOpen, setContactPanelOpen] = useState(false);
+  const [aboutPanelOpen, setAboutPanelOpen] = useState(false);
   return (
     <RootLayout>
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -48,6 +50,8 @@ export default function Home() {
             onMouseLeave={() => setHoveredItem(null)}
             onTouchStart={() => setHoveredItem('about')} // Touch event
             onTouchEnd={() => setHoveredItem(null)} // Touch event
+
+            onClick={() => setAboutPanelOpen(true)}
           >
             <h2 className={`mb-3 text-2xl font-semibold`}>
               About me{" "}
@@ -93,6 +97,9 @@ export default function Home() {
         </a>
       </div>
     </main>
+    {aboutPanelOpen && <AboutPanel
+          onClose={() => setAboutPanelOpen(false)}
+        />}
     </RootLayout>
   );
 }

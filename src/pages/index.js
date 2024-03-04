@@ -2,24 +2,27 @@ import { useState } from 'react';
 import RootLayout from "@/app/layout";
 import ContactPanel from '@/components/contact-panel';
 import AboutPanel from '@/components/about-panel'
+import Header from '@/components/header';
 
 export default function Home() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [contactPanelOpen, setContactPanelOpen] = useState(false);
   const [aboutPanelOpen, setAboutPanelOpen] = useState(false);
+
+  const handleClick = (setter) => {
+    // Set both hoveredItem and aboutPanelOpen in the click event
+    setHoveredItem(null); // Reset hoveredItem
+    setter(true); // Open the about panel
+  };
+
   return (
     <RootLayout>
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="relative z-10 max-w-5xl w-full flex items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-        Welcome to my website! <code className="font-mono font-bold">What would you like to do?</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none"></div>
-      </div>
+      <Header></Header>
       
       
           {(hoveredItem === 'about' || hoveredItem === 'contact' || hoveredItem === 'portfolio') && (
-  <div className="relative w-full max-w-[30ch]">
+  <div className="relative mt-2 w-full max-w-[30ch]">
     <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-conic from-sky-200 via-blue-200 blur-2xl content-[''] dark:bg-gradient-to-br dark:from-transparent dark:to-blue-700 dark:opacity-10 dark:from-sky-900 dark:via-[#0141ff] dark:opacity-40 w-full h-[180px] sm:w-[240px]">
     </div>
     <div className="z-20 w-full max-w-[30ch]">
@@ -51,9 +54,9 @@ export default function Home() {
             onTouchStart={() => setHoveredItem('about')} // Touch event
             onTouchEnd={() => setHoveredItem(null)} // Touch event
 
-            onClick={() => setAboutPanelOpen(true)}
+            onClick={() => handleClick(setAboutPanelOpen)}
           >
-            <h2 className={`mb-3 text-2xl font-semibold`}>
+            <h2 className={`m-3 text-2xl font-semibold`}>
               About me{" "}
               <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                 -&gt;
@@ -68,9 +71,9 @@ export default function Home() {
           onTouchStart={() => setHoveredItem('contact')} // Touch event
           onTouchEnd={() => setHoveredItem(null)} // Touch event
 
-          onClick={() => setContactPanelOpen(true)}
+          onClick={() => handleClick(setContactPanelOpen)}
           >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
+          <h2 className={`m-3 text-2xl font-semibold`}>
             Contact{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
@@ -88,7 +91,7 @@ export default function Home() {
           onTouchStart={() => setHoveredItem('portfolio')} // Touch event
           onTouchEnd={() => setHoveredItem(null)} // Touch event
         >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
+          <h2 className={`m-3 text-2xl font-semibold`}>
             Portfolio{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;

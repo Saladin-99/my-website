@@ -9,6 +9,7 @@ class MyDocument extends Document {
         <Head>
           <meta name="My Website" content="website for my info" />
           {/* Other meta tags, links, etc. */}
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         </Head>
         <body>
           <Main />

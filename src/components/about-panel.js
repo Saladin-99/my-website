@@ -25,7 +25,7 @@ const AboutPanel = ({ onClose }) => {
       ref={panelRef}
       className="fixed inset-0 z-50 flex items-end justify-center bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm p-6 text-left shadow-xl transform transition-transform duration-300 ease-in-out"
     >
-      <div className="w-full max-w-screen-md h-3/4 bg-white rounded-lg overflow-hidden">
+      <div className="w-full max-w-screen-md h-full bg-white rounded-lg overflow-auto">
         <div className="border-t-4 border-blue-500 p-4">
           <h3 className="text-lg font-medium leading-6 text-gray-900">About me</h3>
           <div className="mt-2 text-sm text-gray-500 text-balance">

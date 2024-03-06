@@ -28,14 +28,14 @@ export default function Home() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-conic from-sky-200 via-blue-200 blur-2xl content-[''] dark:bg-gradient-to-br dark:from-transparent dark:to-blue-700 dark:opacity-10 dark:from-sky-900 dark:via-[#0141ff] dark:opacity-40 w-full h-[180px] sm:w-[240px]"></div>
           )}
           {hoveredItem&& (
-            <div className="absolute mt-6 z-20 w-full max-w-[30ch]">
+            <div className="absolute mt-10 ml-10 z-20 w-full max-w-[30ch]">
               {(() => {
                 switch (hoveredItem) {
                   case 'about':
                     return (
                       <div>
-                        <h2 className="text-2xl font-semibold">About me</h2>
-                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500">Detailed information about my education, skills, and experience. You can also find my CV here.</p>
+                        <h2 className="text-2xl font-semibold">Resumé</h2>
+                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500">View and download my CV here.</p>
                       </div>
                     );
                   case 'contact':
@@ -69,7 +69,7 @@ export default function Home() {
             onTouchEnd={() => setHoveredItem(null)}
             onClick={() => setAboutPanelOpen(true)}
           >
-            <h2 className={`m-2 text-xl md:text-2xl font-semibold whitespace-no-wrap relative`}>About me <span className={`inline-block transition-transform motion-reduce:transform-none text-base md:text-xl ${hoveredItem === 'about' ? 'translate-x-1' : 'translate-x-0'}`}>-&gt;</span></h2>
+            <h2 className={`m-2 text-xl md:text-2xl font-semibold whitespace-no-wrap relative`}>Resumé <span className={`inline-block transition-transform motion-reduce:transform-none text-base md:text-xl ${hoveredItem === 'about' ? 'translate-x-1' : 'translate-x-0'}`}>-&gt;</span></h2>
           </a>
 
           <a

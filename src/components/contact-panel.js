@@ -10,15 +10,15 @@ const ContactPanel = ({ onClose }) => {
         <h2 className="text-2xl font-bold mb-4 text-white">Contact Information</h2>
         <div className="flex flex-col items-left">
           <div className="flex mt-8 items-center mb-2">
-            <img src="/my-website/svg/email-icon.svg" alt="Email" className="w-6 h-6 mr-2" />
+            <img src="svg/email-icon.svg" alt="Email" className="w-6 h-6 mr-2" />
             <p className="text-white">: salahabdou99@gmail.com</p>
           </div>
           <div className="flex items-center mb-2">
-            <img src="/my-website/svg/phone-icon.svg" alt="Phone" className="w-6 h-6 mr-2" />
+            <img src="svg/phone-icon.svg" alt="Phone" className="w-6 h-6 mr-2" />
             <p className="text-white">: +201203025003</p>
           </div>
           <div className="flex items-center ">
-            <img src="/my-website/svg/linked-icon.svg" alt="Linkedin" className="w-6 h-6 mr-2" />
+            <img src="svg/linked-icon.svg" alt="Linkedin" className="w-6 h-6 mr-2" />
             <p className="text-white">: www.linkedin.com/in/salaheldin99</p>
           </div>
         </div>

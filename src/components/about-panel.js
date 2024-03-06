@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 
 const AboutPanel = ({ onClose }) => {
   const panelRef = useRef(null);
-  const [downloadIcon, setDownloadIcon] = useState('my-website/svg/download-icon.svg');
+  const [downloadIcon, setDownloadIcon] = useState('svg/download-icon.svg');
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -24,10 +24,10 @@ const AboutPanel = ({ onClose }) => {
   const handleDownload = () => {
     // Logic to download the PDF file
     const downloadLink = document.createElement('a');
-    downloadLink.href = 'my-website/nothing/Salah_CV.pdf'; // Replace with your PDF file path
+    downloadLink.href = 'nothing/Salah_CV.pdf'; // Replace with your PDF file path
     downloadLink.download = 'Salah_CV.pdf'; // Replace with your desired file name
     downloadLink.click();
-    setDownloadIcon('my-website/svg/downloaded-icon.svg');
+    setDownloadIcon('svg/downloaded-icon.svg');
   };
 
   return (
@@ -40,7 +40,7 @@ const AboutPanel = ({ onClose }) => {
         className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:text-sm"
         onClick={handleClose}
       >
-        <img src="my-website/svg/back-icon.svg" alt="Back Icon" className="h-5 w-5 mr-2"/>
+        <img src="svg/back-icon.svg" alt="Back Icon" className="h-5 w-5 mr-2"/>
         Back
       </button>
     </div>
@@ -56,7 +56,7 @@ const AboutPanel = ({ onClose }) => {
     </div>
     <div className="absolute top-16 inset-0">
           {/* Your PDF content here */}
-          <embed src="my-website/nothing/Salah_CV.pdf" type="application/pdf" width="100%" height="100%" />
+          <embed src="nothing/Salah_CV.pdf" type="application/pdf" width="100%" height="100%" />
         </div>
     </div>
   );

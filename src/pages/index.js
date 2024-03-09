@@ -24,9 +24,8 @@ export default function Home() {
         <Header />
 
         <div className="relative m-1 w-full max-w-[30ch]">
-          {hoveredItem && (
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-conic from-sky-200 via-blue-200 blur-2xl content-[''] dark:bg-gradient-to-br dark:from-transparent dark:to-blue-700 dark:opacity-10 dark:from-sky-900 dark:via-[#0141ff] dark:opacity-40 w-full h-[180px] sm:w-[240px]"></div>
-          )}
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-conic from-sky-200 via-blue-200 blur-2xl content-[''] dark:bg-gradient-to-br dark:from-transparent dark:to-blue-700 dark:from-sky-900 dark:via-[#0141ff] w-full h-[180px] sm:w-[240px] transition-opacity duration-300 ease-in-out ${hoveredItem ? 'opacity-100 dark:opacity-70' : 'opacity-0 dark:opacity-0'}`}>
+        </div>
           {hoveredItem&& (
             <div className="absolute mt-10 ml-10 z-20 w-full max-w-[30ch]">
               {(() => {
@@ -35,21 +34,21 @@ export default function Home() {
                     return (
                       <div>
                         <h2 className="text-2xl font-semibold">Resumé</h2>
-                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500">View and download my CV here.</p>
+                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500 shadow-outline text-shadow-lg">View and download my CV here.</p>
                       </div>
                     );
                   case 'contact':
                     return (
                       <div>
                         <h2 className="text-2xl font-semibold">Contact</h2>
-                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500">Ways to reach out to me.</p>
+                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500 shadow-outline text-shadow-lg">Ways to reach out to me.</p>
                       </div>
                     );
                   case 'portfolio':
                     return (
                       <div>
                         <h2 className="text-2xl font-semibold">Portfolio</h2>
-                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500">My Github Repo.</p>
+                        <p className="m-0 text-left text-sm opacity-50 text-3xl font-bold text-blue-500 shadow-outline text-shadow-lg">My Github Repo.</p>
                       </div>
                     );
                   default:

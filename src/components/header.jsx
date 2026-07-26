@@ -27,23 +27,6 @@ const Header = () => {
           <span className="blinking-cursor">|</span>
         </span>
       </p>
-
-
-      <style jsx>{`
-      .blinking-cursor {
-          position: absolute;
-          animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-          from, to {
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 };

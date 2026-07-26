@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: 'npm'
       #- name: Setup Pages
       #  uses: actions/configure-pages@v4
@@ -58,14 +58,14 @@ jobs:
         run: npm ci
       - name: Check existing directories
         run: ls -d */
-      - name: Build with Next.js
-        run: npx next build
+      - name: Build static site
+        run: npm run build
       - name: Check existing directories
         run: ls -d */
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./dist
 
    #Deployment job
   deploy:

@@ -3,7 +3,7 @@ import React from 'react';
 const ContactPanel = ({ onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center z-40 justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div className="relative w-96 h-64 z-50 bg-black border border-gray-300 rounded-lg opacity-0 animate-fadeIn p-4 text-center" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-96 h-64 z-50 bg-black border border-gray-300 rounded-lg opacity-0 animate-fade-in p-4 text-center" onClick={(e) => e.stopPropagation()}>
         {/* Close button */}
         <button className="absolute top-2 right-2 text-white text-lg" onClick={onClose}>X</button>
         {/* Contact information */}

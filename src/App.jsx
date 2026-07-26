@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import RootLayout from "@/app/layout";
-import ContactPanel from '@/components/contact-panel';
-import AboutPanel from '@/components/about-panel'
-import Header from '@/components/header';
+import ContactPanel from './components/contact-panel';
+import AboutPanel from './components/about-panel'
+import Header from './components/header';
 
-export default function Home() {
+export default function App() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [contactPanelOpen, setContactPanelOpen] = useState(false);
   const [aboutPanelOpen, setAboutPanelOpen] = useState(false);
@@ -19,7 +18,7 @@ export default function Home() {
   };*/
 
   return (
-    <RootLayout>
+    <>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <Header />
 
@@ -99,6 +98,6 @@ export default function Home() {
 
       {aboutPanelOpen && <AboutPanel onClose={() => setAboutPanelOpen(false)} />}
       {contactPanelOpen && <ContactPanel onClose={() => setContactPanelOpen(false)} />}
-    </RootLayout>
+    </>
   );
 }

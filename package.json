@@ -9,17 +9,16 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-three/fiber": "9.6.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "three": "0.185.1"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@tailwindcss/postcss": "4.3.3",
     "@vitejs/plugin-react": "6.0.4",
-    "autoprefixer": "10.5.4",
     "eslint": "10.8.0",
-    "postcss": "8.5.23",
-    "tailwindcss": "4.3.3",
+    "globals": "17.7.0",
     "vite": "8.1.5"
   }
 }

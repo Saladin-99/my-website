@@ -1,5 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import js from "@eslint/js";
+import globals from "globals";
 
 export default defineConfig([
   js.configs.recommended,
@@ -11,8 +12,7 @@ export default defineConfig([
         ecmaFeatures: { jsx: true },
       },
       globals: {
-        document: "readonly",
-        setTimeout: "readonly",
+        ...globals.browser,
       },
     },
     rules: {

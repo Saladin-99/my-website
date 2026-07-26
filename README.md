@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Salah — Portfolio
 
-## Getting Started
+An interactive, static portfolio built with React, Vite, Three.js, and React
+Three Fiber.
 
-First, run the development server:
+The first visit in a browser session opens with a short procedural wireframe
+sequence:
+
+- desktop and landscape tablet: a desk, monitor, PC, keyboard, and accessories;
+- portrait and mobile: a lightweight phone-on-desk scene;
+- reduced motion, constrained devices, repeat visits, and WebGL failures:
+  immediate access to the HTML interface.
+
+The final résumé, contact, and GitHub interface is regular semantic HTML rather
+than content rendered inside WebGL.
+
+## Local development
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Vite prints the local development URL. The other project checks are:
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run lint
+npm run build
+npm run preview
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Deployment
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Pushes to `main` run lint and a production build, then publish `dist/` through
+GitHub Pages. Static files such as the résumé, favicon, SVGs, and `CNAME` live
+in `public/` and are copied into the deployment artifact.

@@ -189,6 +189,7 @@ function SignalCursor({
   position,
   rotation = [0, 0, 0],
   horizontal = false,
+  size,
   color = COLORS.accent,
 }) {
   const materialRef = useRef(null);
@@ -201,7 +202,9 @@ function SignalCursor({
 
   return (
     <mesh position={position} rotation={rotation}>
-      <planeGeometry args={horizontal ? [0.42, 0.035] : [0.035, 0.3]} />
+      <planeGeometry
+        args={size ?? (horizontal ? [0.42, 0.035] : [0.035, 0.3])}
+      />
       <meshBasicMaterial
         ref={materialRef}
         color={color}
@@ -293,8 +296,13 @@ function Monitor({ compact = false }) {
         </mesh>
       </WireBox>
       <SignalCursor
-        position={[-0.72, compact ? 1.83 : 2.03, -1.596]}
-        color={COLORS.orange}
+        position={[
+          compact ? -1.78 : -2.08,
+          compact ? 2.85 : 3.14,
+          -1.596,
+        ]}
+        size={[0.018, 0.12]}
+        color={COLORS.line}
       />
       <WireBox
         size={[0.18, 1.05, 0.18]}
@@ -734,7 +742,7 @@ function PhoneDisplay() {
       </mesh>
       {glows.map((glow, index) => (
         <mesh
-          key={glow.color}
+          key={`${glow.position.join("-")}-${index}`}
           position={glow.position}
           rotation={[-Math.PI / 2, 0, 0]}
         >
@@ -847,12 +855,6 @@ function PhoneDevice() {
           surfaceOpacity={0.08}
         />
       ))}
-      <SignalCursor
-        horizontal
-        position={[0, 0.158, 2.12]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        color={COLORS.line}
-      />
     </group>
   );
 }

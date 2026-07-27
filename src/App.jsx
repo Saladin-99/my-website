@@ -11,7 +11,7 @@ import ResumeModal from "./components/ResumeModal";
 import ContactModal from "./components/ContactModal";
 
 const IntroScene = lazy(() => import("./components/intro/IntroScene"));
-const INTRO_SESSION_KEY = "salah-portfolio:intro-complete:v9";
+const INTRO_SESSION_KEY = "salah-portfolio:intro-complete:v10";
 
 function readIntroSession() {
   try {

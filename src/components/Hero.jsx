@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const INTRODUCTION = "Hello, I’m Salah.";
+const OS_MARK = `${import.meta.env.BASE_URL}salah-os-mark-512.png`;
 
 function useTypewriter(enabled, text, speed = 62) {
   const [visibleText, setVisibleText] = useState(enabled ? "" : text);
@@ -28,14 +29,6 @@ function useTypewriter(enabled, text, speed = 62) {
   return visibleText;
 }
 
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 12h13M13 6l6 6-6 6" />
-    </svg>
-  );
-}
-
 function FileIcon() {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true">
@@ -61,6 +54,18 @@ function CodeIcon() {
   );
 }
 
+function AppShortcut({ className, icon, label, hint, ...props }) {
+  const Component = props.href ? "a" : "button";
+
+  return (
+    <Component className={`os-app ${className}`} {...props}>
+      <span className="os-app-icon">{icon}</span>
+      <span className="os-app-label">{label}</span>
+      <span className="os-app-hint">{hint}</span>
+    </Component>
+  );
+}
+
 export default function Hero({
   ready,
   animateTyping,
@@ -73,113 +78,109 @@ export default function Hero({
     ready && animateTyping,
     INTRODUCTION,
   );
+  const time = new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
 
   return (
-    <div className="hero-content">
-      <header className="site-header">
-        <a className="wordmark" href="#home" aria-label="Salah, home">
-          <span aria-hidden="true">✦</span>
-          Salah
-        </a>
+    <div className="hero-content retro-desktop">
+      <div className="retro-wallpaper" aria-hidden="true">
+        <span className="wallpaper-cloud wallpaper-cloud--one" />
+        <span className="wallpaper-cloud wallpaper-cloud--two" />
+        <span className="wallpaper-sun" />
+      </div>
 
-        <div className="availability" aria-label="Available to collaborate">
-          <span className="availability-orb" aria-hidden="true" />
-          <span>Available for bright ideas</span>
-        </div>
+      <header className="retro-mobile-status">
+        <span>● ● ●</span>
+        <strong>Salah Mobile</strong>
+        <span>▰</span>
       </header>
 
-      <section className="hero-interface" id="home">
-        <div className="hero-color-orbit" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+      <main className="retro-workspace" id="home">
+        <section className="retro-welcome-window">
+          <div className="retro-titlebar">
+            <span>about_salah.exe</span>
+            <span className="retro-window-controls" aria-hidden="true">
+              <i>_</i>
+              <i>□</i>
+              <i>×</i>
+            </span>
+          </div>
 
-        <p className="hero-eyebrow">
-          A tiny, colorful corner of the internet
-        </p>
+          <div className="retro-welcome-body">
+            <img src={OS_MARK} alt="" />
+            <div>
+              <p className="hero-eyebrow">Salah OS is ready</p>
+              <h1 className="hero-title" tabIndex="-1">
+                <span className="sr-only">{INTRODUCTION}</span>
+                <span aria-hidden="true">{typedIntroduction}</span>
+                <span
+                  className={`typing-cursor ${
+                    typedIntroduction === INTRODUCTION ? "is-idle" : ""
+                  }`}
+                  aria-hidden="true"
+                />
+              </h1>
+              <p className="hero-prompt">
+                Pick an icon. Double-clicking is optional.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <h1 className="hero-title" tabIndex="-1">
-          <span className="sr-only">{INTRODUCTION}</span>
-          <span aria-hidden="true">{typedIntroduction}</span>
-          <span
-            className={`typing-cursor ${
-              typedIntroduction === INTRODUCTION ? "is-idle" : ""
-            }`}
-            aria-hidden="true"
-          />
-        </h1>
-
-        <p className="hero-prompt">Where should we go?</p>
-
-        <nav className="primary-actions" aria-label="Primary">
-          <button
-            className="primary-action primary-action--resume"
+        <nav className="os-apps" aria-label="Primary">
+          <AppShortcut
+            className="os-app--resume"
+            icon={<FileIcon />}
+            label="My Résumé"
+            hint="Useful documents"
             type="button"
             onClick={onOpenResume}
-          >
-            <span className="action-icon">
-              <FileIcon />
-            </span>
-            <span className="action-copy">
-              <span className="action-label">Résumé</span>
-              <span className="action-hint">The useful stuff</span>
-            </span>
-            <span className="action-arrow">
-              <ArrowIcon />
-            </span>
-          </button>
+          />
 
-          <button
-            className="primary-action primary-action--contact"
+          <AppShortcut
+            className="os-app--contact"
+            icon={<ChatIcon />}
+            label="Contact Me"
+            hint="Internet messaging"
             type="button"
             onClick={onOpenContact}
-          >
-            <span className="action-icon">
-              <ChatIcon />
-            </span>
-            <span className="action-copy">
-              <span className="action-label">Say hello</span>
-              <span className="action-hint">Start a conversation</span>
-            </span>
-            <span className="action-arrow">
-              <ArrowIcon />
-            </span>
-          </button>
+          />
 
-          <a
-            className="primary-action primary-action--github"
+          <AppShortcut
+            className="os-app--github"
+            icon={<CodeIcon />}
+            label="GitHub"
+            hint="Code & experiments"
             href="https://github.com/Saladin-99?tab=repositories"
             target="_blank"
             rel="noreferrer"
-          >
-            <span className="action-icon">
-              <CodeIcon />
-            </span>
-            <span className="action-copy">
-              <span className="action-label">GitHub</span>
-              <span className="action-hint">Code & experiments</span>
-            </span>
-            <span className="sr-only"> (opens in a new tab)</span>
-            <span className="action-arrow">
-              <ArrowIcon />
-            </span>
-          </a>
+          />
         </nav>
-      </section>
+      </main>
 
-      <footer className="site-footer">
-        <p>Made with curiosity and too many colors.</p>
-        {canReplay && (
-          <button
-            className="replay-button"
-            type="button"
-            onClick={onReplayIntro}
-          >
-            <span aria-hidden="true">↻</span>
-            Replay the entrance
-          </button>
-        )}
+      <footer className="retro-taskbar">
+        <span className="retro-start">
+          <img src={OS_MARK} alt="" />
+          start
+        </span>
+        <span className="retro-task">
+          <span aria-hidden="true">▣</span>
+          Salah’s Desktop
+        </span>
+        <span className="retro-tray">
+          {canReplay && (
+            <button
+              className="replay-button"
+              type="button"
+              onClick={onReplayIntro}
+            >
+              ↻ <span>Replay intro</span>
+            </button>
+          )}
+          <time>{time}</time>
+        </span>
       </footer>
     </div>
   );

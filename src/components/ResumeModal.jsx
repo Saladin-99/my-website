@@ -21,16 +21,16 @@ function DownloadIcon() {
 export default function ResumeModal({ onClose }) {
   return (
     <ModalFrame
-      eyebrow="FILE / 01"
+      eyebrow="A little about my work"
       title="Résumé"
-      description="A concise record of experience, tools, and selected work."
+      description="Experience, tools, and the things I’ve helped bring to life."
       size="wide"
       onClose={onClose}
     >
       <div className="resume-toolbar">
         <span className="document-status">
           <span aria-hidden="true" />
-          SALAH_CV.PDF
+          Salah’s résumé · PDF
         </span>
         <div className="resume-actions">
           <a href={resumeUrl} target="_blank" rel="noreferrer">

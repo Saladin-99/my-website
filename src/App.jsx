@@ -11,7 +11,7 @@ import ResumeModal from "./components/ResumeModal";
 import ContactModal from "./components/ContactModal";
 
 const IntroScene = lazy(() => import("./components/intro/IntroScene"));
-const INTRO_SESSION_KEY = "salah-portfolio:intro-complete:v2";
+const INTRO_SESSION_KEY = "salah-portfolio:intro-complete:v9";
 
 function readIntroSession() {
   try {
@@ -118,7 +118,7 @@ function IntroLoadingFallback({ onSkip }) {
         <span />
       </div>
       <p className="intro-loading-label" aria-hidden="true">
-        INITIALIZING SCENE
+        Preparing your entrance…
       </p>
       <button
         className="skip-intro"
@@ -126,7 +126,7 @@ function IntroLoadingFallback({ onSkip }) {
         onClick={() => onSkip("keyboard")}
       >
         Skip intro
-        <span>ENTER / SPACE</span>
+        <span>Enter or Space</span>
       </button>
     </div>
   );
@@ -170,7 +170,7 @@ export default function App() {
     if (!introActive) return undefined;
     const watchdog = window.setTimeout(
       () => finishIntro("watchdog"),
-      3200,
+      15000,
     );
     return () => window.clearTimeout(watchdog);
   }, [finishIntro, introActive]);
@@ -203,9 +203,12 @@ export default function App() {
 
   return (
     <div className="site-shell">
-      <div className="ambient-grid" aria-hidden="true" />
-      <div className="scanlines" aria-hidden="true" />
-      <div className="vignette" aria-hidden="true" />
+      <div className="color-field" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="grain" aria-hidden="true" />
 
       {introActive && (
         <IntroErrorBoundary onFailure={finishIntro}>

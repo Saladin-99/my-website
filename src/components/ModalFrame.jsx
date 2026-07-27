@@ -54,11 +54,24 @@ export default function ModalFrame({
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements.at(-1);
+      const activeElement = document.activeElement;
+      const focusIsInside = dialogRef.current.contains(activeElement);
+      const focusIsOnDialog = activeElement === dialogRef.current;
 
-      if (event.shiftKey && document.activeElement === firstElement) {
+      if (
+        event.shiftKey &&
+        (activeElement === firstElement ||
+          focusIsOnDialog ||
+          !focusIsInside)
+      ) {
         event.preventDefault();
         lastElement.focus();
-      } else if (!event.shiftKey && document.activeElement === lastElement) {
+      } else if (
+        !event.shiftKey &&
+        (activeElement === lastElement ||
+          focusIsOnDialog ||
+          !focusIsInside)
+      ) {
         event.preventDefault();
         firstElement.focus();
       }
@@ -89,7 +102,6 @@ export default function ModalFrame({
         aria-describedby={description ? descriptionId : undefined}
         tabIndex="-1"
       >
-        <div className="modal-scanline" aria-hidden="true" />
         <header className="modal-header">
           <div>
             <p className="modal-eyebrow">{eyebrow}</p>

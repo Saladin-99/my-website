@@ -3,19 +3,16 @@ import ModalFrame from "./ModalFrame";
 
 const contactMethods = [
   {
-    index: "01",
     label: "Email",
     value: "salahabdou99@gmail.com",
     href: "mailto:salahabdou99@gmail.com",
   },
   {
-    index: "02",
     label: "Phone",
     value: "+20 120 302 5003",
     href: "tel:+201203025003",
   },
   {
-    index: "03",
     label: "LinkedIn",
     value: "linkedin.com/in/salaheldin99",
     href: "https://www.linkedin.com/in/salaheldin99",
@@ -45,9 +42,9 @@ export default function ContactModal({ onClose }) {
 
   return (
     <ModalFrame
-      eyebrow="CHANNEL / 02"
+      eyebrow="Let’s make something interesting"
       title="Contact"
-      description="Choose the shortest route. I’ll take it from there."
+      description="Pick whatever feels easiest. I’ll take it from there."
       onClose={onClose}
     >
       <div className="contact-list">
@@ -59,7 +56,6 @@ export default function ContactModal({ onClose }) {
             target={method.external ? "_blank" : undefined}
             rel={method.external ? "noreferrer" : undefined}
           >
-            <span className="contact-index">{method.index}</span>
             <span>
               <span className="contact-label">{method.label}</span>
               <span className="contact-value">{method.value}</span>
@@ -70,8 +66,8 @@ export default function ContactModal({ onClose }) {
       </div>
 
       <button className="copy-email" type="button" onClick={copyEmail}>
-        <span>{copied ? "COPIED TO CLIPBOARD" : "COPY EMAIL ADDRESS"}</span>
-        <span aria-hidden="true">{copied ? "✓" : "⌘C"}</span>
+        <span>{copied ? "Copied to clipboard" : "Copy email address"}</span>
+        <span aria-hidden="true">{copied ? "✓" : "Copy"}</span>
         <span className="sr-only" aria-live="polite">
           {copied ? "Email address copied to clipboard." : ""}
         </span>

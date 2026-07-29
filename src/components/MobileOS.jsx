@@ -20,6 +20,7 @@ import ResumePreview, {
 
 const {
   applications,
+  appearance,
   assets,
   behavior,
   copy,
@@ -27,6 +28,45 @@ const {
   resume,
   storage,
 } = portfolioConfig;
+const configuredMobileUiScale = Number(
+  appearance.mobile?.uiScale ?? 1,
+);
+const MOBILE_UI_SCALE = Math.min(
+  1.4,
+  Math.max(
+    0.9,
+    Number.isFinite(configuredMobileUiScale)
+      ? configuredMobileUiScale
+      : 1,
+  ),
+);
+const scaledMobileRem = (value) =>
+  `${Number((value * MOBILE_UI_SCALE).toFixed(4))}rem`;
+const MOBILE_UI_STYLE = Object.freeze({
+  "--mobile-ui-scale": MOBILE_UI_SCALE,
+  "--mobile-home-columns": behavior.mobileLauncher.columns,
+  "--mobile-home-rows": behavior.mobileLauncher.rows,
+  "--mobile-ui-type-micro": scaledMobileRem(0.65),
+  "--mobile-ui-type-caption": scaledMobileRem(0.72),
+  "--mobile-ui-type-label": scaledMobileRem(0.78),
+  "--mobile-ui-type-body": scaledMobileRem(0.875),
+  "--mobile-ui-type-title": scaledMobileRem(1.15),
+  "--mobile-ui-type-title-large": scaledMobileRem(1.55),
+  "--mobile-ui-touch": scaledMobileRem(2.625),
+  "--mobile-ui-touch-compact": scaledMobileRem(2.4),
+  "--mobile-ui-status-height": scaledMobileRem(2.1),
+  "--mobile-ui-notification-height": scaledMobileRem(5.2),
+  "--mobile-ui-avatar": scaledMobileRem(3.15),
+  "--mobile-ui-launcher-icon-min": scaledMobileRem(3.1),
+  "--mobile-ui-launcher-icon-max": scaledMobileRem(4.6),
+  "--mobile-ui-launcher-icon-compact": scaledMobileRem(2.6),
+  "--mobile-ui-dock-height": scaledMobileRem(5.75),
+  "--mobile-ui-dock-height-compact": scaledMobileRem(4.8),
+  "--mobile-ui-nav-height": scaledMobileRem(3.35),
+  "--mobile-ui-nav-icon": scaledMobileRem(1.55),
+  "--mobile-ui-app-bar-height": scaledMobileRem(4.1),
+  "--mobile-ui-app-glyph": scaledMobileRem(2.4),
+});
 const {
   github: GITHUB_PAGE,
   resume: resumeDestination,
@@ -237,6 +277,19 @@ function getStoredLauncherLayout() {
   const migratedOrder = sanitizeAppOrder(
     previousLayout?.drawerOrder ?? legacyOrder,
   );
+
+  if (
+    previousLayout &&
+    typeof previousLayout === "object" &&
+    (Array.isArray(previousLayout.homeSlots) ||
+      Array.isArray(previousLayout.dockOrder))
+  ) {
+    return normalizeLauncherLayout(
+      previousLayout.homeSlots,
+      previousLayout.dockOrder,
+    );
+  }
+
   return createDefaultLauncherLayout(migratedOrder);
 }
 
@@ -1954,6 +2007,7 @@ export default function MobileOS({
       } ${
         dragState ? "salah-mobile-is-dragging" : ""
       }`}
+      style={MOBILE_UI_STYLE}
       aria-hidden={!ready}
       inert={!ready ? true : undefined}
     >

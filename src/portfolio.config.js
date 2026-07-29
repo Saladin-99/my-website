@@ -54,6 +54,11 @@ export const portfolioConfig = {
   },
 
   appearance: {
+    mobile: {
+      // Comfortable-density multiplier for the unlocked mobile OS.
+      // 1 is the base layout; values around 1.1â€“1.25 suit most phones.
+      uiScale: 1.15,
+    },
     cursors: {
       arrow: {
         asset: "cursors/salah-arrow.svg",
@@ -357,8 +362,9 @@ export const portfolioConfig = {
       },
     },
     mobileLauncher: {
-      homeSlotCount: 9,
+      homeSlotCount: 12,
       columns: 3,
+      rows: 4,
       longPressMs: 420,
       dragThresholdPx: 10,
       settleMs: 180,
@@ -386,9 +392,9 @@ export const portfolioConfig = {
   storage: {
     introSessionKey: "salah-portfolio:intro-complete:v10",
     mobileLauncher: {
-      version: 3,
-      currentKey: "salah-mobile-layout-v3",
-      previousKey: "salah-mobile-layout-v2",
+      version: 4,
+      currentKey: "salah-mobile-layout-v4",
+      previousKey: "salah-mobile-layout-v3",
       legacyKey: "salah-mobile-app-order",
     },
   },

@@ -1,0 +1,395 @@
+/*
+ * Comfortable-density layer for the unlocked mobile OS.
+ *
+ * The physical-phone UI used several 7â€“11px values. These semantic tokens
+ * keep text readable and controls finger-sized without scaling the viewport,
+ * safe areas, drag coordinate system, or PDF canvas.
+ */
+
+.salah-mobile-os {
+  --mobile-dock-height: var(--mobile-ui-dock-height);
+  font-size: var(--mobile-ui-type-body);
+}
+
+/* System status and navigation */
+.salah-mobile-status {
+  min-height: calc(
+    env(safe-area-inset-top) + var(--mobile-ui-status-height)
+  );
+  padding-bottom: 0.45rem;
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-status-icons {
+  gap: 0.48rem;
+}
+
+.salah-mobile-status-icons > i {
+  transform: scale(var(--mobile-ui-scale));
+  transform-origin: center;
+}
+
+.salah-mobile-system-nav {
+  min-height: calc(
+    var(--mobile-ui-nav-height) + env(safe-area-inset-bottom)
+  );
+  padding-top: 0.32rem;
+  padding-bottom: max(0.32rem, env(safe-area-inset-bottom));
+}
+
+.salah-mobile-system-nav > button {
+  min-width: var(--mobile-ui-touch);
+  min-height: var(--mobile-ui-touch);
+}
+
+.salah-mobile-system-nav svg {
+  width: var(--mobile-ui-nav-icon);
+  height: var(--mobile-ui-nav-icon);
+}
+
+/* Home notification */
+.salah-mobile-greeting-notification {
+  min-height: var(--mobile-ui-notification-height);
+  gap: 0.72rem;
+  padding: 0.72rem;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-mark {
+  width: var(--mobile-ui-avatar);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-copy p {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-copy h2 {
+  font-size: clamp(
+    var(--mobile-ui-type-title),
+    4.5vw,
+    var(--mobile-ui-type-title-large)
+  );
+}
+
+.salah-mobile-greeting-notification
+  .salah-mobile-profile-copy
+  > span {
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-replay {
+  min-width: var(--mobile-ui-touch);
+  min-height: var(--mobile-ui-touch);
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-replay-icon {
+  font-size: var(--mobile-ui-type-title);
+}
+
+/* Launcher canvas and installed-app dock */
+.salah-mobile-home-grid .salah-mobile-app-glyph,
+.salah-mobile-dock-grid .salah-mobile-app-glyph,
+.salah-mobile-drag-ghost .salah-mobile-app-glyph {
+  width: clamp(
+    var(--mobile-ui-launcher-icon-min),
+    min(15vw, 8vh),
+    var(--mobile-ui-launcher-icon-max)
+  );
+  max-width: 72%;
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon,
+.salah-mobile-dock-grid .salah-mobile-app-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 0.58rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon > strong,
+.salah-mobile-dock-grid .salah-mobile-app-icon > strong,
+.salah-mobile-drag-ghost.salah-mobile-app-icon > strong {
+  width: calc(100% - 0.3rem);
+  align-self: center;
+  justify-self: center;
+  font-size: var(--mobile-ui-type-caption);
+  letter-spacing: 0.005em;
+  line-height: 1.1;
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon > small {
+  display: none;
+}
+
+.salah-mobile-drag-ghost.salah-mobile-app-icon > small {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-done,
+.salah-mobile-arrange {
+  min-height: var(--mobile-ui-touch);
+  font-size: var(--mobile-ui-type-caption);
+}
+
+/* Retained drawer styles use the same density if the drawer is re-enabled. */
+.salah-mobile-drawer-handle {
+  min-height: var(--mobile-ui-touch);
+}
+
+.salah-mobile-drawer-handle > strong,
+.salah-mobile-drawer-header p,
+.salah-mobile-app-drawer > .salah-mobile-arrange-hint {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-drawer-header h2 {
+  font-size: var(--mobile-ui-type-title);
+}
+
+.salah-mobile-drawer-grid .salah-mobile-app-glyph {
+  width: clamp(
+    var(--mobile-ui-launcher-icon-min),
+    14vw,
+    var(--mobile-ui-launcher-icon-max)
+  );
+}
+
+.salah-mobile-drawer-grid .salah-mobile-app-icon > strong {
+  font-size: var(--mobile-ui-type-label);
+}
+
+.salah-mobile-drawer-grid .salah-mobile-app-icon > small {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+/* App title bars */
+.salah-mobile-app-bar {
+  min-height: var(--mobile-ui-app-bar-height);
+  gap: 0.78rem;
+}
+
+.salah-mobile-app-bar > button {
+  width: var(--mobile-ui-touch);
+  height: var(--mobile-ui-touch);
+}
+
+.salah-mobile-app-bar > button svg {
+  width: var(--mobile-ui-nav-icon);
+}
+
+.salah-mobile-app-bar-glyph {
+  width: var(--mobile-ui-app-glyph);
+}
+
+.salah-mobile-app-bar h1 {
+  font-size: var(--mobile-ui-type-title);
+}
+
+.salah-mobile-app-bar > div > span {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+/* PaperTrail */
+.salah-mobile-document-toolbar > span {
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-document-zoom :is(button),
+.salah-mobile-document-actions :is(button, a) {
+  min-width: var(--mobile-ui-touch-compact);
+  height: var(--mobile-ui-touch-compact);
+}
+
+.salah-mobile-document-zoom button:nth-child(2) {
+  min-width: calc(var(--mobile-ui-touch) + 0.6rem);
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-document-actions svg {
+  width: var(--mobile-ui-type-title);
+}
+
+/* Signal Book */
+.salah-mobile-contact-card p,
+.salah-mobile-signal-book .contact-label {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-contact-card h2 {
+  font-size: clamp(
+    var(--mobile-ui-type-title),
+    5vw,
+    var(--mobile-ui-type-title-large)
+  );
+}
+
+.salah-mobile-contact-card > div:last-child > span,
+.salah-mobile-signal-book .contact-value {
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-signal-book .contact-method__link,
+.salah-mobile-signal-book .contact-method__copy {
+  min-height: var(--mobile-ui-touch);
+}
+
+.salah-mobile-signal-book .contact-method__launch {
+  width: var(--mobile-ui-touch-compact);
+  height: var(--mobile-ui-touch-compact);
+}
+
+.salah-mobile-signal-book .contact-method__copy {
+  min-width: calc(var(--mobile-ui-touch) + 0.75rem);
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-signal-book
+  :is(.contact-method__launch, .contact-method__copy)
+  svg {
+  width: var(--mobile-ui-type-title);
+  height: var(--mobile-ui-type-title);
+}
+
+/* SalahBrowser */
+.salah-mobile-browser-toolbar {
+  min-height: calc(var(--mobile-ui-touch) + 0.8rem);
+}
+
+.salah-mobile-browser-toolbar > span {
+  width: var(--mobile-ui-touch-compact);
+  height: var(--mobile-ui-touch-compact);
+  font-size: var(--mobile-ui-type-title);
+}
+
+.salah-mobile-browser-toolbar input {
+  height: var(--mobile-ui-touch-compact);
+  font-size: var(--mobile-ui-type-body);
+}
+
+.salah-mobile-browser-page p,
+.salah-mobile-browser-page > small {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-browser-page h2 {
+  font-size: clamp(
+    var(--mobile-ui-type-title-large),
+    6.4vw,
+    calc(var(--mobile-ui-type-title-large) + 0.8rem)
+  );
+}
+
+.salah-mobile-browser-page > span {
+  font-size: var(--mobile-ui-type-body);
+}
+
+.salah-mobile-browser-page > a {
+  min-height: var(--mobile-ui-touch);
+  font-size: var(--mobile-ui-type-label);
+}
+
+/* Recents */
+.salah-mobile-recents-header p,
+.salah-mobile-recent-meta small,
+.salah-mobile-recents-empty p {
+  font-size: var(--mobile-ui-type-micro);
+}
+
+.salah-mobile-recents-header h1 {
+  font-size: var(--mobile-ui-type-title-large);
+}
+
+.salah-mobile-recents-header > button {
+  min-height: var(--mobile-ui-touch);
+  font-size: var(--mobile-ui-type-caption);
+}
+
+.salah-mobile-recent-meta strong,
+.salah-mobile-recents-empty h2 {
+  font-size: var(--mobile-ui-type-title);
+}
+
+.salah-mobile-recents-empty > span {
+  font-size: var(--mobile-ui-type-title-large);
+}
+
+.salah-mobile-recent-glyph {
+  width: var(--mobile-ui-touch-compact);
+}
+
+.salah-mobile-recent-close {
+  width: var(--mobile-ui-touch);
+  height: var(--mobile-ui-touch);
+  font-size: var(--mobile-ui-type-title-large);
+}
+
+/*
+ * Short screens retain readable controls by yielding optional copy and space,
+ * rather than shrinking the interface below phone-sized targets.
+ */
+@media (max-height: 650px) and (orientation: portrait) {
+  .salah-mobile-os {
+    --mobile-dock-height: var(--mobile-ui-dock-height-compact);
+    --mobile-home-gap: 0.25rem;
+  }
+
+  .salah-mobile-greeting-notification {
+    min-height: calc(var(--mobile-ui-notification-height) - 0.85rem);
+    padding-block: 0.48rem;
+  }
+
+  .salah-mobile-greeting-notification
+    .salah-mobile-profile-copy
+    > span,
+  .salah-mobile-home-grid .salah-mobile-app-icon > small {
+    display: none;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-glyph,
+  .salah-mobile-dock-grid .salah-mobile-app-glyph {
+    width: clamp(
+      var(--mobile-ui-launcher-icon-compact),
+      min(13vw, 8vh),
+      var(--mobile-ui-launcher-icon-max)
+    );
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .salah-mobile-os {
+    --mobile-dock-height: var(--mobile-ui-dock-height-compact);
+  }
+
+  .salah-mobile-home-shortcuts {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .salah-mobile-home-shortcuts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .salah-mobile-home-grid {
+    grid-template-rows: repeat(
+      var(--mobile-home-rows, 4),
+      minmax(4.6rem, 1fr)
+    );
+    height: auto;
+    min-height: 100%;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-icon > small {
+    display: none;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-glyph,
+  .salah-mobile-dock-grid .salah-mobile-app-glyph {
+    width: clamp(
+      var(--mobile-ui-launcher-icon-compact),
+      min(8vw, 13vh),
+      var(--mobile-ui-launcher-icon-max)
+    );
+  }
+}

@@ -1,5 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -9,17 +10,25 @@ import {
 } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { portfolioConfig } from "../../portfolio.config";
+import { getPortfolioLayoutMode } from "../../portfolio.runtime";
 import DeviceBootOverlay from "./DeviceBootOverlay";
+import {
+  DESKTOP_INTRO_TIMING,
+  DESKTOP_PROGRESS_DURATION_MS,
+  MOBILE_INTRO_DURATION_MS,
+  MOBILE_INTRO_TIMING,
+} from "./introTiming";
 import DesktopEnvironment, {
-  DESKTOP_MONITOR,
+  getDesktopDisplayMetrics,
 } from "./scene/DesktopEnvironment";
 import MobileEnvironment, {
-  MOBILE_PHONE,
+  getMobileDisplayMetrics,
 } from "./scene/MobileEnvironment";
 import { PALETTE } from "./scene/SceneKit";
 
 const COLORS = {
-  background: "#0d0714",
+  background: portfolioConfig.site.backgroundColor,
   line: "#c4b5ff",
   dim: "#c4b5ff",
   accent: "#c4b5ff",
@@ -31,16 +40,21 @@ const COLORS = {
 
 const MONITOR_SCREEN_INSET = 0.24;
 const PHONE_SCALE = 0.31;
+const SHADOW_OPTIONS = Object.freeze({
+  type: THREE.PCFShadowMap,
+});
+const MOBILE_DPR = Object.freeze([1, 1.25]);
+const MOBILE_CAMERA_READY_SECONDS =
+  MOBILE_INTRO_TIMING.cameraReadyMs / 1000;
+const WEBGL_OPTIONS = Object.freeze({
+  antialias: true,
+  alpha: false,
+  powerPreference: "high-performance",
+  stencil: false,
+});
 
 function getSceneMode() {
-  if (
-    window.matchMedia("(orientation: portrait)").matches ||
-    window.innerWidth < 700
-  ) {
-    return "mobile";
-  }
-
-  return window.innerWidth < 1024 ? "tablet" : "desktop";
+  return getPortfolioLayoutMode();
 }
 
 function WireBox({
@@ -280,10 +294,12 @@ function SignalCursor({
   color = COLORS.accent,
 }) {
   const materialRef = useRef(null);
+  const elapsedRef = useRef(0);
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
     if (!materialRef.current) return;
-    const pulse = Math.sin(clock.getElapsedTime() * Math.PI * 2);
+    elapsedRef.current += delta;
+    const pulse = Math.sin(elapsedRef.current * Math.PI * 2);
     materialRef.current.opacity = pulse > -0.1 ? 0.95 : 0.12;
   });
 
@@ -304,6 +320,7 @@ function SignalCursor({
 
 function AmbientVertices({ count, color = COLORS.accent }) {
   const materialRef = useRef(null);
+  const elapsedRef = useRef(0);
   const geometry = useMemo(() => {
     let seed = 991;
     const random = () => {
@@ -328,10 +345,11 @@ function AmbientVertices({ count, color = COLORS.accent }) {
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
+    elapsedRef.current += delta;
     if (materialRef.current) {
       materialRef.current.opacity =
-        0.16 + Math.sin(clock.getElapsedTime() * 4.2) * 0.06;
+        0.16 + Math.sin(elapsedRef.current * 4.2) * 0.06;
     }
   });
 
@@ -1013,12 +1031,14 @@ export function LegacyDesktopDesk({ mode }) {
 function PhoneDisplay() {
   const screenMaterialRef = useRef(null);
   const glowMaterialRefs = useRef([]);
+  const elapsedRef = useRef(0);
   const offColor = useMemo(() => new THREE.Color(COLORS.background), []);
   const awakeColor = useMemo(() => new THREE.Color("#251134"), []);
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
+    elapsedRef.current += delta;
     const wakeProgress = THREE.MathUtils.smootherstep(
-      THREE.MathUtils.clamp((clock.getElapsedTime() - 1.7) / 1.1, 0, 1),
+      THREE.MathUtils.clamp((elapsedRef.current - 1.7) / 1.1, 0, 1),
       0,
       1,
     );
@@ -1285,18 +1305,20 @@ export function LegacyMobilePhone() {
   );
 }
 
-function CameraRig({ mode, onSequenceComplete }) {
-  const { camera, invalidate, size } = useThree();
-  const completedRef = useRef(false);
+function CameraRig({ display, mode, onDeviceReady }) {
+  const { camera, invalidate } = useThree();
+  const initializedRef = useRef(false);
+  const deviceReadyRef = useRef(false);
+  const holdTimerRef = useRef(null);
+  const elapsedRef = useRef(0);
   const currentPosition = useMemo(() => new THREE.Vector3(), []);
   const currentTarget = useMemo(() => new THREE.Vector3(), []);
   const currentUp = useMemo(() => new THREE.Vector3(), []);
   const isMobile = mode === "mobile";
 
   const screenFraming = useMemo(() => {
-    const tablet = mode === "tablet";
     const viewportAspect = Math.max(
-      size.width / Math.max(size.height, 1),
+      display.aspect,
       0.01,
     );
     const verticalTangent = Math.tan(
@@ -1304,65 +1326,56 @@ function CameraRig({ mode, onSequenceComplete }) {
     );
     const horizontalTangent = verticalTangent * viewportAspect;
     const screenWidth = isMobile
-      ? MOBILE_PHONE.screenWidth
-      : tablet
-        ? 4.15
-        : DESKTOP_MONITOR.screenWidth;
+      ? display.projectedBezelWidth
+      : display.screenWidth;
     const screenHeight = isMobile
-      ? MOBILE_PHONE.screenHeight
-      : tablet
-        ? 2.38
-        : DESKTOP_MONITOR.screenHeight;
+      ? display.projectedBezelHeight
+      : display.screenHeight;
     const verticalDistance = screenHeight / (2 * verticalTangent);
     const horizontalDistance = screenWidth / (2 * horizontalTangent);
-    const coverDistance =
-      Math.min(verticalDistance, horizontalDistance) *
-      (isMobile ? 0.9 : 0.97);
+    const coverDistance = Math.max(
+      verticalDistance,
+      horizontalDistance,
+    );
 
     if (isMobile) {
-      const screenPlaneY = MOBILE_PHONE.screenY;
+      const screenPlaneY = display.bezelSurfaceY;
       return {
         cover: new THREE.Vector3(0, screenPlaneY + coverDistance, 0),
-        through: new THREE.Vector3(
-          0,
-          screenPlaneY + coverDistance * 0.34,
-          0,
-        ),
       };
     }
 
-    const screenPlaneZ = DESKTOP_MONITOR.screenZ;
-    const screenCenterY = tablet ? 1.85 : 2.05;
+    const screenPlaneZ = display.screenPlaneZ;
     return {
       cover: new THREE.Vector3(
         0,
-        screenCenterY,
+        display.centerY,
         screenPlaneZ + coverDistance,
       ),
-      through: new THREE.Vector3(
-        0,
-        screenCenterY,
-        screenPlaneZ + coverDistance * 0.55,
-      ),
     };
-  }, [camera.fov, isMobile, mode, size.height, size.width]);
+  }, [camera.fov, display, isMobile]);
 
   const settings = useMemo(() => {
     if (isMobile) {
       return {
         stageOneStart: 0.8,
-        stageOneEnd: 3.65,
-        frameEnd: 3.65,
-        holdEnd: 4.35,
-        zoomEnd: 5.65,
-        total: 8.2,
+        stageOneEnd: MOBILE_CAMERA_READY_SECONDS,
+        frameEnd: MOBILE_CAMERA_READY_SECONDS,
         start: new THREE.Vector3(0, 18.5, 0),
         control: new THREE.Vector3(0, 12.8, 0),
         stageOnePosition: screenFraming.cover.clone(),
         screenPosition: screenFraming.cover.clone(),
-        end: screenFraming.through.clone(),
-        targetStart: new THREE.Vector3(0, 0.03, 0),
-        targetEnd: new THREE.Vector3(0, 0.03, 0),
+        deviceUiStart: MOBILE_CAMERA_READY_SECONDS,
+        targetStart: new THREE.Vector3(
+          0,
+          display.bezelSurfaceY,
+          0,
+        ),
+        targetEnd: new THREE.Vector3(
+          0,
+          display.bezelSurfaceY,
+          0,
+        ),
         upStart: new THREE.Vector3(0, 0, 1),
         upEnd: new THREE.Vector3(0, 0, 1),
       };
@@ -1372,10 +1385,10 @@ function CameraRig({ mode, onSequenceComplete }) {
     return {
       stageOneStart: 0.85,
       stageOneEnd: 3.35,
-      frameEnd: 5.45,
-      holdEnd: 6.15,
-      zoomEnd: 7.15,
-      total: 9.4,
+      frameEnd:
+        DESKTOP_INTRO_TIMING.screenApproachEndMs / 1000,
+      deviceUiStart:
+        DESKTOP_INTRO_TIMING.deviceUiStartMs / 1000,
       start: new THREE.Vector3(0, tablet ? 16.2 : 19.3, 0),
       control: new THREE.Vector3(
         0,
@@ -1384,21 +1397,20 @@ function CameraRig({ mode, onSequenceComplete }) {
       ),
       stageOnePosition: new THREE.Vector3(
         0,
-        tablet ? 1.85 : 2.05,
+        display.centerY,
         screenFraming.cover.z + 5.2,
       ),
       screenPosition: screenFraming.cover.clone(),
-      end: screenFraming.through.clone(),
       targetStart: new THREE.Vector3(0, 0.18, 0),
       targetEnd: new THREE.Vector3(
         0,
-        tablet ? 1.85 : DESKTOP_MONITOR.centerY,
-        DESKTOP_MONITOR.screenZ,
+        display.centerY,
+        display.screenPlaneZ,
       ),
       upStart: new THREE.Vector3(0, 0, -1),
       upEnd: new THREE.Vector3(0, 1, 0),
     };
-  }, [isMobile, mode, screenFraming]);
+  }, [display, isMobile, mode, screenFraming]);
 
   const curve = useMemo(
     () =>
@@ -1410,7 +1422,26 @@ function CameraRig({ mode, onSequenceComplete }) {
     [settings],
   );
 
+  const markDeviceReady = useCallback(() => {
+    if (deviceReadyRef.current) return;
+    deviceReadyRef.current = true;
+    onDeviceReady?.();
+  }, [onDeviceReady]);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(holdTimerRef.current);
+    },
+    [],
+  );
+
   useLayoutEffect(() => {
+    if (initializedRef.current) {
+      invalidate();
+      return;
+    }
+
+    initializedRef.current = true;
     const easedProgress = 0;
     curve.getPointAt(easedProgress, currentPosition);
     currentTarget.lerpVectors(
@@ -1434,8 +1465,16 @@ function CameraRig({ mode, onSequenceComplete }) {
     settings,
   ]);
 
-  useFrame(({ clock }) => {
-    const elapsed = clock.getElapsedTime();
+  useFrame((_, delta) => {
+    if (deviceReadyRef.current) {
+      camera.position.copy(settings.screenPosition);
+      camera.up.copy(settings.upEnd);
+      camera.lookAt(settings.targetEnd);
+      return;
+    }
+
+    elapsedRef.current += delta;
+    const elapsed = elapsedRef.current;
     const getStageProgress = (start, end) =>
       THREE.MathUtils.smootherstep(
         THREE.MathUtils.clamp((elapsed - start) / (end - start), 0, 1),
@@ -1457,29 +1496,29 @@ function CameraRig({ mode, onSequenceComplete }) {
       currentUp
         .lerpVectors(settings.upStart, settings.upEnd, progress)
         .normalize();
-    } else if (elapsed <= settings.frameEnd) {
+    } else if (!isMobile && elapsed <= settings.frameEnd) {
       const progress = getStageProgress(
         settings.stageOneEnd,
         settings.frameEnd,
       );
-      currentPosition.lerpVectors(
-        settings.stageOnePosition,
-        settings.screenPosition,
+      const startDistance =
+        settings.stageOnePosition.z - settings.targetEnd.z;
+      const endDistance =
+        settings.screenPosition.z - settings.targetEnd.z;
+      const inverseDistance = THREE.MathUtils.lerp(
+        1 / startDistance,
+        1 / endDistance,
         progress,
       );
-      currentTarget.copy(settings.targetEnd);
-      currentUp.copy(settings.upEnd);
-    } else if (elapsed <= settings.holdEnd) {
-      currentPosition.copy(settings.screenPosition);
+      currentPosition.set(
+        settings.screenPosition.x,
+        settings.screenPosition.y,
+        settings.targetEnd.z + 1 / inverseDistance,
+      );
       currentTarget.copy(settings.targetEnd);
       currentUp.copy(settings.upEnd);
     } else {
-      const progress = getStageProgress(settings.holdEnd, settings.zoomEnd);
-      currentPosition.lerpVectors(
-        settings.screenPosition,
-        settings.end,
-        progress,
-      );
+      currentPosition.copy(settings.screenPosition);
       currentTarget.copy(settings.targetEnd);
       currentUp.copy(settings.upEnd);
     }
@@ -1487,32 +1526,70 @@ function CameraRig({ mode, onSequenceComplete }) {
     camera.up.copy(currentUp);
     camera.lookAt(currentTarget);
 
-    if (elapsed >= settings.total && !completedRef.current) {
-      completedRef.current = true;
-      onSequenceComplete("complete");
+    if (isMobile && elapsed >= settings.deviceUiStart) {
+      markDeviceReady();
+    } else if (
+      !isMobile &&
+      elapsed >= settings.frameEnd
+    ) {
+      if (holdTimerRef.current === null) {
+        const holdDurationMs = Math.max(
+          0,
+          (settings.deviceUiStart - elapsed) * 1000,
+        );
+        holdTimerRef.current = window.setTimeout(() => {
+          holdTimerRef.current = null;
+          markDeviceReady();
+        }, holdDurationMs);
+      }
+    } else {
+      invalidate();
     }
   });
 
   return null;
 }
 
-function Scene({ mode, onSequenceComplete }) {
+const Scene = memo(function Scene({ mode, onDeviceReady }) {
+  const size = useThree((state) => state.size);
+  const gl = useThree((state) => state.gl);
+  const invalidate = useThree((state) => state.invalidate);
   const isMobile = mode === "mobile";
-  const shadowSize = isMobile ? 1024 : 2048;
+  const viewportAspect = Math.max(
+    size.width / Math.max(size.height, 1),
+    0.01,
+  );
+  const display = useMemo(
+    () =>
+      isMobile
+        ? getMobileDisplayMetrics(viewportAspect)
+        : getDesktopDisplayMetrics(
+            viewportAspect,
+            mode === "tablet",
+          ),
+    [isMobile, mode, viewportAspect],
+  );
+  const shadowSize = 1024;
+  const sceneBackground = isMobile ? PALETTE.background : "#241827";
+
+  useLayoutEffect(() => {
+    gl.shadowMap.needsUpdate = true;
+    invalidate();
+  }, [display, gl, invalidate]);
 
   return (
     <>
-      <color attach="background" args={[PALETTE.background]} />
-      <fog attach="fog" args={[PALETTE.background, 19, 40]} />
+      <color attach="background" args={[sceneBackground]} />
+      <fog attach="fog" args={[sceneBackground, 19, 40]} />
       <hemisphereLight
-        args={[PALETTE.light, PALETTE.background, 1.02]}
+        args={["#777cb1", "#170b1e", 0.35]}
         position={[0, 12, 0]}
       />
-      <ambientLight color={PALETTE.mid} intensity={0.24} />
+      <ambientLight color="#b7aec8" intensity={0.06} />
       <directionalLight
         castShadow
-        color={PALETTE.highlight}
-        intensity={1.75}
+        color="#ffbe78"
+        intensity={1.3}
         position={isMobile ? [5, 10, 7] : [8, 12, 8]}
         shadow-mapSize-width={shadowSize}
         shadow-mapSize-height={shadowSize}
@@ -1527,9 +1604,14 @@ function Scene({ mode, onSequenceComplete }) {
         shadow-radius={3}
       />
       <directionalLight
-        color={PALETTE.mid}
-        intensity={1.05}
-        position={[-7, 5, -8]}
+        color="#57c4b8"
+        intensity={0.62}
+        position={[-8, 7, 6]}
+      />
+      <directionalLight
+        color="#b477df"
+        intensity={0.82}
+        position={[3, 7, -10]}
       />
       {!isMobile && (
         <mesh
@@ -1539,64 +1621,171 @@ function Scene({ mode, onSequenceComplete }) {
         >
           <planeGeometry args={[32, 32]} />
           <meshPhongMaterial
-            color={PALETTE.floor}
-            emissive={PALETTE.background}
+            color="#5a3c52"
+            emissive={sceneBackground}
             emissiveIntensity={0.04}
-            specular={PALETTE.deep}
+            specular={PALETTE.glow}
             shininess={10}
           />
         </mesh>
       )}
       {isMobile ? (
-        <MobileEnvironment />
+        <MobileEnvironment display={display} />
       ) : (
-        <DesktopEnvironment compact={mode === "tablet"} />
+        <DesktopEnvironment
+          compact={mode === "tablet"}
+          display={display}
+        />
       )}
-      <CameraRig mode={mode} onSequenceComplete={onSequenceComplete} />
+      <CameraRig
+        display={display}
+        mode={mode}
+        onDeviceReady={onDeviceReady}
+      />
     </>
   );
-}
+});
 
-export default function IntroScene({ onComplete }) {
+const IntroCanvas = memo(function IntroCanvas({
+  mode,
+  onDeviceReady,
+  onWebGlError,
+}) {
+  const cameraConfiguration = useMemo(
+    () => ({
+      fov: mode === "mobile" ? 42 : mode === "tablet" ? 40 : 36,
+      near: 0.05,
+      far: 50,
+    }),
+    [mode],
+  );
+  const handleCreated = useCallback(
+    ({ gl }) => {
+      gl.outputColorSpace = THREE.SRGBColorSpace;
+      gl.toneMapping = THREE.ACESFilmicToneMapping;
+      gl.toneMappingExposure = 0.96;
+      gl.shadowMap.enabled = true;
+      gl.shadowMap.autoUpdate = false;
+      gl.shadowMap.needsUpdate = true;
+      gl.domElement.addEventListener(
+        "webglcontextlost",
+        (event) => {
+          event.preventDefault();
+          onWebGlError("webgl-error");
+        },
+        { once: true },
+      );
+    },
+    [onWebGlError],
+  );
+
+  return (
+    <Canvas
+      aria-hidden="true"
+      shadows={SHADOW_OPTIONS}
+      frameloop="demand"
+      camera={cameraConfiguration}
+      dpr={mode === "mobile" ? MOBILE_DPR : 1}
+      gl={WEBGL_OPTIONS}
+      onCreated={handleCreated}
+      fallback={<div className="intro-fallback" />}
+    >
+      <Scene
+        mode={mode}
+        onDeviceReady={onDeviceReady}
+      />
+    </Canvas>
+  );
+});
+
+export default function IntroScene({
+  onComplete,
+  onHandoffStart,
+  onInteractionWaitChange,
+}) {
   const [mode] = useState(getSceneMode);
+  const [deviceUiActive, setDeviceUiActive] = useState(false);
+  const [awaitingInteraction, setAwaitingInteraction] = useState(false);
+  const [handoff, setHandoff] = useState(false);
   const [exiting, setExiting] = useState(false);
   const completionRef = useRef(false);
+  const handoffRef = useRef(false);
+  const handoffFallbackRef = useRef(null);
   const exitTimerRef = useRef(null);
 
   const completeIntro = useCallback(
     (reason) => {
       if (completionRef.current) return;
+      if (
+        handoffRef.current &&
+        (reason === "keyboard" || reason === "pointer")
+      ) {
+        return;
+      }
+
       completionRef.current = true;
+      setAwaitingInteraction(false);
+      onInteractionWaitChange?.(false);
       setExiting(true);
       exitTimerRef.current = window.setTimeout(
         () => onComplete(reason),
-        reason === "complete" ? 120 : 190,
+        reason === "complete" && handoffRef.current ? 32 : 190,
       );
     },
-    [onComplete],
+    [onComplete, onInteractionWaitChange],
   );
 
+  const beginHandoff = useCallback(() => {
+    if (handoffRef.current || completionRef.current) return;
+    handoffRef.current = true;
+    setHandoff(true);
+    onHandoffStart?.();
+    handoffFallbackRef.current = window.setTimeout(
+      () => completeIntro("complete"),
+      900,
+    );
+  }, [completeIntro, onHandoffStart]);
+
+  const activateDeviceUi = useCallback(() => {
+    setDeviceUiActive(true);
+  }, []);
+
+  const handleInteractionWaitChange = useCallback(
+    (waiting) => {
+      if (completionRef.current) return;
+      const nextWaiting = Boolean(waiting);
+      setAwaitingInteraction(nextWaiting);
+      onInteractionWaitChange?.(nextWaiting);
+    },
+    [onInteractionWaitChange],
+  );
+
+  const progressDuration =
+    mode === "mobile"
+      ? MOBILE_INTRO_DURATION_MS
+      : DESKTOP_PROGRESS_DURATION_MS;
   useEffect(() => {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
 
     const handleKeyDown = (event) => {
-      const activeTag = document.activeElement?.tagName;
-      const isEditable =
-        activeTag === "INPUT" ||
-        activeTag === "TEXTAREA" ||
-        document.activeElement?.isContentEditable;
+      const activeElement = document.activeElement;
+      const isInteractive =
+        activeElement instanceof Element &&
+        activeElement.matches(
+          "button, input, select, textarea, [role='slider'], [contenteditable='true']",
+        );
+      const isActivationKey =
+        event.key === "Enter" || event.key === " ";
       const shouldSkip =
         !event.repeat &&
         !event.isComposing &&
         !event.altKey &&
         !event.ctrlKey &&
         !event.metaKey &&
-        !isEditable &&
-        (event.key === "Enter" ||
-          event.key === " " ||
-          event.key === "Escape");
+        !(isInteractive && isActivationKey) &&
+        (isActivationKey || event.key === "Escape");
 
       if (!shouldSkip) return;
       event.preventDefault();
@@ -1615,71 +1804,61 @@ export default function IntroScene({ onComplete }) {
     reducedMotion.addEventListener("change", handleMotionChange);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    const watchdog = window.setTimeout(
-      () => completeIntro("watchdog"),
-      11000,
-    );
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       reducedMotion.removeEventListener("change", handleMotionChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.clearTimeout(watchdog);
+      window.clearTimeout(handoffFallbackRef.current);
       window.clearTimeout(exitTimerRef.current);
+      onInteractionWaitChange?.(false);
     };
-  }, [completeIntro]);
+  }, [completeIntro, onInteractionWaitChange]);
 
   return (
     <div
       className={`intro-layer intro-layer--${mode} ${
+        handoff ? "is-handoff" : ""
+      } ${
         exiting ? "is-exiting" : ""
+      } ${
+        awaitingInteraction ? "is-awaiting-interaction" : ""
       }`}
+      style={{
+        "--intro-progress-duration": `${progressDuration}ms`,
+      }}
       onPointerDown={(event) => {
-        if (event.target.closest("button")) return;
+        if (handoffRef.current) return;
+        if (
+          event.target.closest(
+            "button, input, select, textarea, [role='slider']",
+          )
+        ) {
+          return;
+        }
         completeIntro("pointer");
       }}
+      onAnimationEnd={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          event.animationName === "intro-handoff-out"
+        ) {
+          completeIntro("complete");
+        }
+      }}
     >
-      <Canvas
-        aria-hidden="true"
-        shadows
-        camera={{
-          fov: mode === "mobile" ? 42 : mode === "tablet" ? 40 : 36,
-          near: 0.05,
-          far: 50,
-          position:
-            mode === "mobile"
-              ? [0, 18.5, 0]
-              : mode === "tablet"
-                ? [0, 16.2, 0]
-                : [0, 19.3, 0],
-        }}
-        dpr={mode === "mobile" ? [1, 1.25] : [1, 1.5]}
-        gl={{
-          antialias: true,
-          alpha: false,
-          powerPreference: "high-performance",
-        }}
-        onCreated={({ gl }) => {
-          gl.outputColorSpace = THREE.SRGBColorSpace;
-          gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.08;
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          gl.domElement.addEventListener(
-            "webglcontextlost",
-            (event) => {
-              event.preventDefault();
-              completeIntro("webgl-error");
-            },
-            { once: true },
-          );
-        }}
-        fallback={<div className="intro-fallback" />}
-      >
-        <Scene mode={mode} onSequenceComplete={completeIntro} />
-      </Canvas>
+      <IntroCanvas
+        mode={mode}
+        onDeviceReady={activateDeviceUi}
+        onWebGlError={completeIntro}
+      />
 
-      <DeviceBootOverlay mode={mode} />
+      <DeviceBootOverlay
+        mode={mode}
+        active={deviceUiActive}
+        onHandoffStart={beginHandoff}
+        onInteractionWaitChange={handleInteractionWaitChange}
+        onSequenceComplete={completeIntro}
+      />
 
       <div className="intro-progress" aria-hidden="true">
         <span />
@@ -1690,12 +1869,11 @@ export default function IntroScene({ onComplete }) {
         type="button"
         onClick={() => completeIntro("keyboard")}
       >
-        Skip intro
-        <span>Enter or Space</span>
+        {portfolioConfig.copy.intro.skip}
+        <span>{portfolioConfig.copy.intro.skipHint}</span>
       </button>
       <p className="sr-only">
-        A brief animated device sequence is playing. Press Enter, Space,
-        Escape, or the skip button to continue.
+        {portfolioConfig.copy.intro.accessibilityDescription}
       </p>
     </div>
   );

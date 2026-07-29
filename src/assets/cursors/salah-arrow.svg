@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="shell" x1="4" y1="3" x2="23" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8f0ff"/>
+      <stop offset=".24" stop-color="#86ecff"/>
+      <stop offset=".48" stop-color="#d8ff83"/>
+      <stop offset=".7" stop-color="#ffb35f"/>
+      <stop offset="1" stop-color="#d898ff"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="8" y1="8" x2="18" y2="25" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".12"/>
+    </linearGradient>
+  </defs>
+  <path d="M5.1 4.5 7 28.2l5.6-5.8 4.7 8.2 5.1-2.8-4.6-8 8.2-1.2Z" fill="#322b4d" opacity=".42"/>
+  <path d="M3.1 2.3 5 26l5.7-5.9 4.7 8.3 5-2.9-4.5-7.9 8.2-1.3Z" fill="url(#shell)" stroke="#302743" stroke-width="2.1" stroke-linejoin="round"/>
+  <path d="m5.2 5.4 1.2 15.8 4-4.1 9.3-1.7Z" fill="url(#edge)"/>
+  <path d="m12.3 20.2 4.8 7.4" fill="none" stroke="#fff5d8" stroke-width="1.1" stroke-linecap="round" opacity=".72"/>
+</svg>

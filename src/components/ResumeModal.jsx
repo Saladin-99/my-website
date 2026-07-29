@@ -1,6 +1,16 @@
 import ModalFrame from "./ModalFrame";
+import ResumePreview from "./ResumePreview";
+import { portfolioConfig } from "../portfolio.config";
+import { publicAsset } from "../portfolio.runtime";
 
-const resumeUrl = `${import.meta.env.BASE_URL}nothing/Salah_CV.pdf`;
+const {
+  applications,
+  assets,
+  copy,
+  destinations,
+  resume,
+} = portfolioConfig;
+const resumeUrl = publicAsset(assets.resumePdf);
 
 function ExternalIcon() {
   return (
@@ -19,37 +29,44 @@ function DownloadIcon() {
 }
 
 export default function ResumeModal({ onClose }) {
+  const openResume = () => {
+    window.open(resumeUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <ModalFrame
-      eyebrow="A little about my work"
-      title="Résumé"
-      description="Experience, tools, and the things I’ve helped bring to life."
+      eyebrow={destinations.resume.eyebrow}
+      title={applications.resume.label}
+      description={destinations.resume.desktopDescription}
       size="wide"
       onClose={onClose}
     >
       <div className="resume-toolbar">
         <span className="document-status">
           <span aria-hidden="true" />
-          Salah’s résumé · PDF
+          {destinations.resume.title} · PDF
         </span>
         <div className="resume-actions">
           <a href={resumeUrl} target="_blank" rel="noreferrer">
             <ExternalIcon />
-            Open
+            {copy.common.openNewTab}
           </a>
-          <a href={resumeUrl} download="Salah_CV.pdf">
+          <a href={resumeUrl} download={resume.downloadName}>
             <DownloadIcon />
-            Download
+            {copy.desktop.resume.saveLabel}
           </a>
         </div>
       </div>
 
       <div className="resume-preview">
-        <iframe src={`${resumeUrl}#view=FitH`} title="Salah's résumé" />
+        <ResumePreview
+          source={resumeUrl}
+          onOpenBrowser={openResume}
+        />
         <div className="resume-mobile-fallback">
-          <p>PDF preview is optimized for larger screens.</p>
+          <p>{destinations.resume.mobileDescription}</p>
           <a href={resumeUrl} target="_blank" rel="noreferrer">
-            View full résumé
+            {copy.common.openNewTab}
             <ExternalIcon />
           </a>
         </div>

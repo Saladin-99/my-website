@@ -10,11 +10,76 @@ import {
 
 export const PHONE_SCALE = 0.31;
 export const PHONE_BASE_Y = -0.005;
-export const MOBILE_PHONE = {
-  screenWidth: 2.28 * PHONE_SCALE,
-  screenHeight: 4.56 * PHONE_SCALE,
-  screenY: PHONE_BASE_Y + 0.142 * PHONE_SCALE,
-};
+const REFERENCE_SCREEN_WIDTH = 2.28;
+const REFERENCE_SCREEN_HEIGHT = 4.56;
+const SCREEN_AREA =
+  REFERENCE_SCREEN_WIDTH * REFERENCE_SCREEN_HEIGHT;
+const BEZEL_SCALE = 4.76 / REFERENCE_SCREEN_HEIGHT;
+const BODY_SCALE = 5.18 / REFERENCE_SCREEN_HEIGHT;
+
+export function getMobileDisplayMetrics(viewportAspect) {
+  const aspect =
+    Number.isFinite(viewportAspect) && viewportAspect > 0
+      ? viewportAspect
+      : 9 / 19.5;
+  const landscape = aspect > 1;
+  const localAspect = landscape ? 1 / aspect : aspect;
+  let localScreenWidth = Math.sqrt(SCREEN_AREA * localAspect);
+  let localScreenHeight = localScreenWidth / localAspect;
+  const fitScale = Math.min(
+    1,
+    4.8 / localScreenWidth,
+    5.2 / localScreenHeight,
+  );
+  localScreenWidth *= fitScale;
+  localScreenHeight *= fitScale;
+
+  const localBezelWidth = localScreenWidth * BEZEL_SCALE;
+  const localBezelHeight = localScreenHeight * BEZEL_SCALE;
+  const localBodyWidth = localScreenWidth * BODY_SCALE;
+  const localBodyHeight = localScreenHeight * BODY_SCALE;
+  const projectedScreenWidth =
+    (landscape ? localScreenHeight : localScreenWidth) *
+    PHONE_SCALE;
+  const projectedScreenHeight =
+    (landscape ? localScreenWidth : localScreenHeight) *
+    PHONE_SCALE;
+  const projectedBezelWidth =
+    (landscape ? localBezelHeight : localBezelWidth) *
+    PHONE_SCALE;
+  const projectedBezelHeight =
+    (landscape ? localBezelWidth : localBezelHeight) *
+    PHONE_SCALE;
+
+  return Object.freeze({
+    aspect,
+    landscape,
+    localBezelHeight,
+    localBezelWidth,
+    localBodyHeight,
+    localBodyWidth,
+    localScreenHeight,
+    localScreenWidth,
+    projectedBezelHeight,
+    projectedBezelWidth,
+    projectedScreenHeight,
+    projectedScreenWidth,
+    rotationY: Math.PI + (landscape ? Math.PI / 2 : 0),
+    bezelSurfaceY:
+      PHONE_BASE_Y + (0.115 + 0.08 / 2) * PHONE_SCALE,
+    screenY: PHONE_BASE_Y + 0.142 * PHONE_SCALE,
+  });
+}
+
+const MOBILE_COLORS = Object.freeze({
+  sofa: "#b94f5c",
+  sofaShadow: "#994454",
+  sofaWarm: "#c36a52",
+  table: "#55417e",
+  rug: "#275e64",
+  book: "#6e9f5b",
+  mug: "#3b9f96",
+});
 
 function Sofa() {
   return (
@@ -24,7 +89,7 @@ function Sofa() {
         position={[0, -0.08, 0]}
         radius={0.25}
         segments={3}
-        color={PALETTE.body}
+        color={MOBILE_COLORS.sofa}
         edgeOpacity={0.04}
         shininess={18}
       />
@@ -34,7 +99,7 @@ function Sofa() {
         rotation={[-0.05, 0, 0]}
         radius={0.2}
         segments={3}
-        color={PALETTE.deep}
+        color={MOBILE_COLORS.sofaShadow}
         edgeOpacity={0.05}
         shininess={16}
       />
@@ -45,7 +110,7 @@ function Sofa() {
           position={[x, 0.24, 0]}
           radius={0.2}
           segments={3}
-          color={PALETTE.deep}
+          color={MOBILE_COLORS.sofa}
           edgeOpacity={0.04}
           shininess={16}
         />
@@ -57,7 +122,13 @@ function Sofa() {
             position={[x, 0.46, 0.16]}
             radius={0.18}
             segments={3}
-            color={index === 1 ? PALETTE.mid : PALETTE.body}
+            color={
+              [
+                MOBILE_COLORS.sofa,
+                MOBILE_COLORS.sofaWarm,
+                MOBILE_COLORS.sofa,
+              ][index]
+            }
             edgeOpacity={0.04}
             shininess={14}
           />
@@ -67,7 +138,13 @@ function Sofa() {
             rotation={[-0.08, 0, 0]}
             radius={0.18}
             segments={3}
-            color={index === 1 ? PALETTE.mid : PALETTE.body}
+            color={
+              [
+                MOBILE_COLORS.sofaShadow,
+                MOBILE_COLORS.sofa,
+                MOBILE_COLORS.sofaShadow,
+              ][index]
+            }
             edgeOpacity={0.04}
             shininess={14}
           />
@@ -79,7 +156,7 @@ function Sofa() {
         rotation={[0.04, 0.38, -0.06]}
         radius={0.18}
         segments={3}
-        color={PALETTE.light}
+        color={PALETTE.yellow}
         edgeOpacity={0.04}
         shininess={16}
       />
@@ -90,7 +167,7 @@ function Sofa() {
             size={[0.3, 0.48, 0.3]}
             position={[x, -0.58, z]}
             radius={0.055}
-            color={PALETTE.shadow}
+            color={PALETTE.graphite}
             edgeOpacity={0.03}
             shininess={20}
           />
@@ -108,7 +185,7 @@ function CoffeeTable() {
         position={[0, -0.18, 0.34]}
         radius={0.18}
         segments={3}
-        color={PALETTE.deep}
+        color={MOBILE_COLORS.table}
         edgeOpacity={0.07}
         shininess={36}
       />
@@ -116,7 +193,7 @@ function CoffeeTable() {
         size={[5.24, 0.13, 4.96]}
         position={[0, -0.35, 0.34]}
         radius={0.12}
-        color={PALETTE.shadow}
+        color={PALETTE.graphite}
         edgeOpacity={0.03}
         shininess={20}
       />
@@ -131,7 +208,7 @@ function CoffeeTable() {
           size={[0.34, 0.42, 0.34]}
           position={position}
           radius={0.06}
-          color={PALETTE.shadow}
+          color={PALETTE.graphite}
           edgeOpacity={0.03}
           shininess={22}
         />
@@ -149,7 +226,7 @@ function CoffeeMug() {
         height={0.66}
         segments={14}
         position={[0, 0.33, 0]}
-        color={PALETTE.light}
+        color={MOBILE_COLORS.mug}
         edgeOpacity={0.05}
         shininess={72}
       />
@@ -166,7 +243,7 @@ function CoffeeMug() {
         radius={0.21}
         tube={0.055}
         position={[0.38, 0.35, 0]}
-        color={PALETTE.light}
+        color={MOBILE_COLORS.mug}
         radialSegments={7}
         tubularSegments={18}
         edgeOpacity={0.03}
@@ -182,7 +259,7 @@ function TableReading() {
         size={[1.26, 0.065, 1.62]}
         position={[0, 0, 0]}
         radius={0.045}
-        color={PALETTE.mid}
+        color={MOBILE_COLORS.book}
         edgeOpacity={0.05}
         shininess={24}
       />
@@ -191,14 +268,14 @@ function TableReading() {
         position={[0.08, 0.052, -0.05]}
         rotation={[0, -0.05, 0]}
         radius={0.04}
-        color={PALETTE.light}
+        color={PALETTE.ivory}
         edgeOpacity={0.03}
         shininess={22}
       />
       <BeveledBox
         size={[0.7, 0.018, 0.09]}
         position={[0.08, 0.078, -0.36]}
-        color={PALETTE.highlight}
+        color={PALETTE.coral}
         edgeOpacity={0}
         castShadow={false}
       />
@@ -207,7 +284,7 @@ function TableReading() {
           key={z}
           size={[0.82, 0.012, 0.04]}
           position={[0.08, 0.078, z]}
-          color={PALETTE.mid}
+          color={PALETTE.graphite}
           edgeOpacity={0}
           castShadow={false}
         />
@@ -222,7 +299,7 @@ function RemoteControl() {
       <BeveledBox
         size={[0.48, 0.13, 1.35]}
         radius={0.11}
-        color={PALETTE.body}
+        color={PALETTE.cobalt}
         edgeOpacity={0.05}
         shininess={36}
       />
@@ -231,16 +308,18 @@ function RemoteControl() {
         height={0.035}
         segments={10}
         position={[0, 0.085, -0.38]}
-        color={PALETTE.light}
+        color={PALETTE.coral}
         edgeOpacity={0.02}
       />
-      {[-0.05, 0.18, 0.4].map((z) => (
+      {[-0.05, 0.18, 0.4].map((z, index) => (
         <BeveledBox
           key={z}
           size={[0.22, 0.025, 0.1]}
           position={[0, 0.083, z]}
           radius={0.022}
-          color={PALETTE.mid}
+          color={
+            [PALETTE.yellow, PALETTE.teal, PALETTE.coral][index]
+          }
           edgeOpacity={0}
         />
       ))}
@@ -248,14 +327,20 @@ function RemoteControl() {
   );
 }
 
-function PhoneScreen() {
+function PhoneScreen({ display }) {
   const materialRef = useRef(null);
+  const elapsedRef = useRef(0);
   const offColor = useMemo(() => new THREE.Color(PALETTE.background), []);
   const awakeColor = useMemo(() => new THREE.Color(PALETTE.deep), []);
+  const {
+    localScreenHeight,
+    localScreenWidth,
+  } = display;
 
-  useFrame(({ clock }) => {
+  useFrame((_, delta) => {
+    elapsedRef.current += delta;
     const progress = THREE.MathUtils.smootherstep(
-      THREE.MathUtils.clamp((clock.getElapsedTime() - 1.7) / 1.15, 0, 1),
+      THREE.MathUtils.clamp((elapsedRef.current - 1.7) / 1.15, 0, 1),
       0,
       1,
     );
@@ -276,22 +361,33 @@ function PhoneScreen() {
         rotation={[-Math.PI / 2, 0, 0]}
         receiveShadow
       >
-        <planeGeometry args={[2.28, 4.56]} />
+        <planeGeometry
+          args={[localScreenWidth, localScreenHeight]}
+        />
         <meshPhongMaterial
           ref={materialRef}
           color={PALETTE.background}
-          emissive={PALETTE.mid}
+          emissive={PALETTE.cyan}
           emissiveIntensity={0}
-          specular={PALETTE.highlight}
+          specular={PALETTE.glow}
           shininess={118}
           toneMapped={false}
         />
       </mesh>
       <mesh
-        position={[-0.34, 0.146, -0.16]}
+        position={[
+          -localScreenWidth * 0.149,
+          0.146,
+          -localScreenHeight * 0.035,
+        ]}
         rotation={[-Math.PI / 2, 0, -0.09]}
       >
-        <planeGeometry args={[0.28, 3.95]} />
+        <planeGeometry
+          args={[
+            localScreenWidth * 0.123,
+            localScreenHeight * 0.866,
+          ]}
+        />
         <meshBasicMaterial
           color={PALETTE.glow}
           transparent
@@ -304,37 +400,49 @@ function PhoneScreen() {
   );
 }
 
-function OldSmartphone() {
+function OldSmartphone({ display }) {
+  const {
+    localBezelHeight,
+    localBezelWidth,
+    localBodyHeight,
+    localBodyWidth,
+    localScreenHeight,
+    localScreenWidth,
+    rotationY,
+  } = display;
+  const topControlZ = -localScreenHeight / 2 + 0.03;
+  const homeControlZ = localScreenHeight / 2 - 0.03;
+
   return (
     <group
       position={[0, PHONE_BASE_Y, 0]}
-      rotation={[0, Math.PI, 0]}
+      rotation={[0, rotationY, 0]}
       scale={PHONE_SCALE}
     >
       <BeveledBox
-        size={[2.58, 0.24, 5.18]}
+        size={[localBodyWidth, 0.24, localBodyHeight]}
         position={[0, 0.02, 0]}
         radius={0.24}
         segments={4}
-        color={PALETTE.shadow}
+        color={PALETTE.graphite}
         edgeOpacity={0.08}
         shininess={78}
       />
       <BeveledBox
-        size={[2.38, 0.08, 4.76]}
+        size={[localBezelWidth, 0.08, localBezelHeight]}
         position={[0, 0.115, 0]}
         radius={0.18}
         segments={3}
-        color={PALETTE.deep}
+        color={PALETTE.cobalt}
         edgeOpacity={0.04}
         shininess={88}
       />
-      <PhoneScreen />
+      <PhoneScreen display={display} />
       <BeveledBox
         size={[0.42, 0.025, 0.06]}
-        position={[0, 0.158, -2.25]}
+        position={[0, 0.158, topControlZ]}
         radius={0.018}
-        color={PALETTE.mid}
+        color={PALETTE.silver}
         edgeOpacity={0}
         castShadow={false}
       />
@@ -342,31 +450,43 @@ function OldSmartphone() {
         radius={0.09}
         height={0.025}
         segments={12}
-        position={[0.48, 0.159, -2.25]}
-        color={PALETTE.light}
+        position={[
+          localScreenWidth * 0.21,
+          0.159,
+          topControlZ,
+        ]}
+        color={PALETTE.lime}
         edgeOpacity={0}
         castShadow={false}
       />
       <TorusForm
         radius={0.2}
         tube={0.035}
-        position={[0, 0.16, 2.25]}
+        position={[0, 0.16, homeControlZ]}
         rotation={[Math.PI / 2, 0, 0]}
-        color={PALETTE.mid}
+        color={PALETTE.silver}
         edgeOpacity={0.02}
       />
       <BeveledBox
         size={[0.05, 0.08, 0.74]}
-        position={[-1.31, 0.025, -0.72]}
+        position={[
+          -localBodyWidth / 2 - 0.02,
+          0.025,
+          -localScreenHeight * 0.158,
+        ]}
         radius={0.018}
-        color={PALETTE.mid}
+        color={PALETTE.silver}
         edgeOpacity={0}
       />
       <BeveledBox
         size={[0.05, 0.08, 0.5]}
-        position={[1.31, 0.025, -0.42]}
+        position={[
+          localBodyWidth / 2 + 0.02,
+          0.025,
+          -localScreenHeight * 0.092,
+        ]}
         radius={0.018}
-        color={PALETTE.mid}
+        color={PALETTE.silver}
         edgeOpacity={0}
       />
     </group>
@@ -390,18 +510,25 @@ function LivingRoomFloor() {
         position={[0, -0.5, 0.42]}
         radius={0.2}
         segments={3}
-        color={PALETTE.body}
+        color={MOBILE_COLORS.rug}
         edgeOpacity={0.03}
         shininess={8}
         castShadow={false}
       />
-      {[-2.1, -0.7, 0.7, 2.1].map((x) => (
+      {[-2.1, -0.7, 0.7, 2.1].map((x, index) => (
         <BeveledBox
           key={x}
           size={[0.035, 0.012, 6.7]}
           position={[x, -0.46, 0.42]}
           radius={0.004}
-          color={PALETTE.mid}
+          color={
+            [
+              PALETTE.coral,
+              PALETTE.yellow,
+              PALETTE.teal,
+              PALETTE.blue,
+            ][index]
+          }
           edgeOpacity={0}
           castShadow={false}
         />
@@ -410,7 +537,7 @@ function LivingRoomFloor() {
   );
 }
 
-export default function MobileEnvironment() {
+export default function MobileEnvironment({ display }) {
   return (
     <group>
       <LivingRoomFloor />
@@ -419,7 +546,7 @@ export default function MobileEnvironment() {
       <TableReading />
       <RemoteControl />
       <CoffeeMug />
-      <OldSmartphone />
+      <OldSmartphone display={display} />
     </group>
   );
 }

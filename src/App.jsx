@@ -7,11 +7,19 @@ import {
   useState,
 } from "react";
 import Hero from "./components/Hero";
-import ResumeModal from "./components/ResumeModal";
-import ContactModal from "./components/ContactModal";
+import { useSalahAudio } from "./hooks/useSalahAudio";
+import { portfolioConfig } from "./portfolio.config";
+import { createPortfolioCursorStyle } from "./portfolio.runtime";
 
-const IntroScene = lazy(() => import("./components/intro/IntroScene"));
-const INTRO_SESSION_KEY = "salah-portfolio:intro-complete:v10";
+const loadIntroScene = () => import("./components/intro/IntroScene");
+const IntroScene = lazy(loadIntroScene);
+const {
+  behavior,
+  copy,
+  storage,
+} = portfolioConfig;
+const INTRO_SESSION_KEY = storage.introSessionKey;
+const PORTFOLIO_CURSOR_STYLE = createPortfolioCursorStyle();
 
 function readIntroSession() {
   try {
@@ -55,10 +63,12 @@ function shouldPlayIntro(webglAvailable) {
   const reducedMotion = prefersReducedMotion();
   const hasVeryLimitedCpu =
     typeof navigator.hardwareConcurrency === "number" &&
-    navigator.hardwareConcurrency <= 2;
+    navigator.hardwareConcurrency <=
+      behavior.intro.lowCpuCoreThreshold;
   const savesData = navigator.connection?.saveData === true;
 
   return (
+    behavior.intro.enabled &&
     !hasCompletedIntro &&
     !reducedMotion &&
     !hasVeryLimitedCpu &&
@@ -118,32 +128,44 @@ function IntroLoadingFallback({ onSkip }) {
         <span />
       </div>
       <p className="intro-loading-label" aria-hidden="true">
-        Preparing your entrance…
+        {copy.intro.loading}
       </p>
       <button
         className="skip-intro"
         type="button"
         onClick={() => onSkip("keyboard")}
       >
-        Skip intro
-        <span>Enter or Space</span>
+        {copy.intro.skip}
+        <span>{copy.intro.skipHint}</span>
       </button>
     </div>
   );
 }
 
 export default function App() {
+  const {
+    activate: activateAudio,
+    playDesktopClick,
+    playMobileTap,
+  } = useSalahAudio({
+    enabled: behavior.audio.enabled,
+    volume: behavior.audio.interfaceVolume,
+  });
   const [webglAvailable] = useState(canUseWebGL);
   const [introActive, setIntroActive] = useState(() =>
     shouldPlayIntro(webglAvailable),
   );
+  const [introAwaitingInteraction, setIntroAwaitingInteraction] =
+    useState(false);
+  const [introHandoff, setIntroHandoff] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(prefersReducedMotion);
   const [heroCycle, setHeroCycle] = useState(0);
-  const [activeModal, setActiveModal] = useState(null);
 
   const finishIntro = useCallback((reason) => {
     writeIntroSession();
     setIntroActive(false);
+    setIntroAwaitingInteraction(false);
+    setIntroHandoff(false);
 
     if (reason === "keyboard") {
       window.requestAnimationFrame(() => {
@@ -152,12 +174,39 @@ export default function App() {
     }
   }, []);
 
+  const beginIntroHandoff = useCallback(() => {
+    setIntroHandoff(true);
+  }, []);
+
   const replayIntro = useCallback(() => {
     if (prefersReducedMotion() || !webglAvailable) return;
-    setActiveModal(null);
+    void activateAudio({ fromGesture: true });
+    setIntroAwaitingInteraction(false);
+    setIntroHandoff(false);
     setHeroCycle((cycle) => cycle + 1);
     setIntroActive(true);
-  }, [webglAvailable]);
+  }, [activateAudio, webglAvailable]);
+
+  const handleInterfaceClick = useCallback(
+    (event) => {
+      if (!(event.target instanceof Element)) return;
+
+      const control = event.target.closest(
+        "button:not(:disabled), a[href], [role='button']:not([aria-disabled='true'])",
+      );
+      if (!control) return;
+
+      if (control.closest(".salah-mobile-os")) {
+        void playMobileTap();
+        return;
+      }
+
+      if (control.closest(".salah-desktop")) {
+        void playDesktopClick();
+      }
+    },
+    [playDesktopClick, playMobileTap],
+  );
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -167,13 +216,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!introActive) return undefined;
+    if (!introActive || introAwaitingInteraction) return undefined;
     const watchdog = window.setTimeout(
       () => finishIntro("watchdog"),
-      15000,
+      behavior.intro.watchdogMs,
     );
     return () => window.clearTimeout(watchdog);
-  }, [finishIntro, introActive]);
+  }, [finishIntro, introActive, introAwaitingInteraction]);
 
   useEffect(() => {
     if (introActive) return undefined;
@@ -202,7 +251,13 @@ export default function App() {
   }, [introActive]);
 
   return (
-    <div className="site-shell">
+    <div
+      className={`site-shell ${
+        introActive ? "is-intro-active" : ""
+      }`}
+      style={PORTFOLIO_CURSOR_STYLE}
+      onClick={handleInterfaceClick}
+    >
       <div className="color-field" aria-hidden="true">
         <span />
         <span />
@@ -215,33 +270,34 @@ export default function App() {
           <Suspense
             fallback={<IntroLoadingFallback onSkip={finishIntro} />}
           >
-            <IntroScene onComplete={finishIntro} />
+            <IntroScene
+              onComplete={finishIntro}
+              onHandoffStart={beginIntroHandoff}
+              onInteractionWaitChange={setIntroAwaitingInteraction}
+            />
           </Suspense>
         </IntroErrorBoundary>
       )}
 
       <main
-        className={`hero-stage ${introActive ? "is-intro" : "is-ready"}`}
-        inert={introActive || activeModal ? true : undefined}
-        aria-hidden={introActive || activeModal ? true : undefined}
+        className={`hero-stage ${
+          introActive
+            ? introHandoff
+              ? "is-handoff"
+              : "is-intro"
+            : "is-ready"
+        }`}
+        inert={introActive ? true : undefined}
+        aria-hidden={introActive ? true : undefined}
       >
         <Hero
           key={heroCycle}
           ready={!introActive}
           animateTyping={!reducedMotion}
-          onOpenResume={() => setActiveModal("resume")}
-          onOpenContact={() => setActiveModal("contact")}
           onReplayIntro={replayIntro}
           canReplay={!reducedMotion && webglAvailable}
         />
       </main>
-
-      {activeModal === "resume" && (
-        <ResumeModal onClose={() => setActiveModal(null)} />
-      )}
-      {activeModal === "contact" && (
-        <ContactModal onClose={() => setActiveModal(null)} />
-      )}
     </div>
   );
 }

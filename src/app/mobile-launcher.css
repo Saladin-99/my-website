@@ -1,0 +1,837 @@
+/*
+ * Salah Mobile launcher v3
+ * ------------------------
+ * The launcher is intentionally simpler than an app drawer: one expansive
+ * 3×3 Home canvas and one permanent installed-app dock above system
+ * navigation. This file sits after mobile-os.css so the launcher can evolve
+ * without disturbing the approved app, browser, document, or Recents views.
+ */
+
+.salah-mobile-os {
+  --mobile-home-gutter: clamp(0.58rem, 2.5vw, 1rem);
+  --mobile-home-gap: clamp(0.42rem, 1.45vh, 0.72rem);
+  --mobile-dock-height: clamp(5.4rem, 13.5vh, 7.3rem);
+  --salah-mobile-drag-x: 0px;
+  --salah-mobile-drag-y: 0px;
+  --salah-mobile-drag-grab-x: 0px;
+  --salah-mobile-drag-grab-y: 0px;
+  --salah-mobile-drag-width: 6.5rem;
+  --salah-mobile-drag-height: 7rem;
+}
+
+.salah-mobile-home {
+  position: relative;
+  display: grid;
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    var(--mobile-dock-height);
+  gap: var(--mobile-home-gap);
+  align-content: stretch;
+  width: min(100%, 52rem);
+  height: 100%;
+  margin: 0 auto;
+  padding: var(--mobile-home-gutter);
+  overflow: hidden;
+}
+
+.salah-mobile-home::before {
+  display: none;
+}
+
+.salah-mobile-greeting-notification {
+  position: relative;
+  z-index: 3;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: clamp(0.58rem, 2.3vw, 0.9rem);
+  align-items: center;
+  min-height: clamp(5.2rem, 13vh, 6.45rem);
+  padding: clamp(0.58rem, 2.25vw, 0.82rem);
+  overflow: hidden;
+  border: 1px solid #a99aad;
+  border-radius: 1.08rem 0.34rem 1.08rem 0.34rem;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.025) 0 2px,
+      transparent 2px 7px
+    ),
+    linear-gradient(165deg, #51445f 0 17%, #33293e 17.5% 100%);
+  box-shadow:
+    inset 2px 2px #796b83,
+    inset -2px -2px #191320,
+    0.28rem 0.34rem 0 rgba(11, 8, 16, 0.3),
+    0 0.75rem 1.8rem rgba(13, 9, 20, 0.22);
+  transform-origin: 50% 0;
+}
+
+.salah-mobile-greeting-notification::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0.28rem;
+  background: linear-gradient(
+    90deg,
+    var(--mobile-aqua),
+    var(--mobile-violet) 36%,
+    var(--mobile-coral) 68%,
+    var(--mobile-amber)
+  );
+  box-shadow:
+    0 1px rgba(255, 255, 255, 0.3),
+    0 0.22rem 0.7rem rgba(189, 139, 220, 0.2);
+  content: "";
+}
+
+.salah-mobile-greeting-notification::after {
+  right: 0.62rem;
+  bottom: 0.48rem;
+  left: auto;
+  width: clamp(2.6rem, 12vw, 4.25rem);
+  height: 2px;
+  border-radius: 0;
+  background: linear-gradient(
+    90deg,
+    var(--mobile-aqua),
+    var(--mobile-violet),
+    var(--mobile-amber)
+  );
+  box-shadow: 0 1px rgba(12, 8, 17, 0.7);
+}
+
+.salah-mobile-greeting-notification--queued {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, calc(-100% - 1.25rem), 0)
+    scale(0.985);
+}
+
+.salah-mobile-greeting-notification--entering {
+  visibility: visible;
+  animation: salah-mobile-notification-arrive 720ms
+    cubic-bezier(0.2, 0.82, 0.22, 1) both;
+  will-change: transform, opacity;
+}
+
+.salah-mobile-greeting-notification--settled {
+  visibility: visible;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-mark {
+  width: clamp(3.05rem, 12vw, 4.2rem);
+  border-color: #a99bac;
+  border-radius: 0.84rem 0.25rem 0.84rem 0.25rem;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.18),
+      transparent 35%
+    ),
+    #1c1625;
+  box-shadow:
+    inset 2px 2px #4c4059,
+    inset -2px -2px #0f0b15,
+    0.18rem 0.22rem 0 rgba(10, 7, 15, 0.38);
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-mark > span {
+  border-color: #33293e;
+  background: #79c481;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-copy {
+  gap: 0.12rem;
+}
+
+.salah-mobile-greeting-notification
+  .salah-mobile-profile-copy
+  :is(p, h2, span) {
+  margin: 0;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-copy p {
+  color: #cbbfd0;
+  font-family: "Trebuchet MS", Tahoma, sans-serif;
+  font-size: clamp(0.5rem, 1.95vw, 0.62rem);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-profile-copy h2 {
+  min-height: 1.16em;
+  color: #fff8eb;
+  font-size: clamp(1.04rem, 4.35vw, 1.55rem);
+  font-variation-settings: "wght" 650;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.salah-mobile-greeting-notification
+  .salah-mobile-profile-copy
+  > span {
+  overflow: hidden;
+  color: #d8cdd7;
+  font-size: clamp(0.58rem, 2.25vw, 0.72rem);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-replay {
+  display: inline-flex;
+  gap: clamp(0.14rem, 0.55vw, 0.28rem);
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: min(5.25rem, 20vw);
+  min-height: clamp(2rem, 5.8vh, 2.35rem);
+  padding: 0.16rem clamp(0.28rem, 1.05vw, 0.46rem);
+  font-size: clamp(0.48rem, 1.65vw, 0.6rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-replay-icon {
+  flex: 0 0 auto;
+  font-size: clamp(0.72rem, 2.7vw, 0.9rem);
+  line-height: 1;
+}
+
+.salah-mobile-greeting-notification .salah-mobile-replay-label {
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+}
+
+.salah-mobile-home-shortcuts {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.salah-mobile-home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.16rem, 1.1vw, 0.5rem);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.salah-mobile-drop-slot {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid transparent;
+  border-radius: 0.92rem 0.3rem 0.92rem 0.3rem;
+  place-items: stretch;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.salah-mobile-drop-slot--home:empty {
+  pointer-events: none;
+}
+
+.salah-mobile-is-arranging .salah-mobile-drop-slot--home:empty,
+.salah-mobile-is-dragging .salah-mobile-drop-slot--home:empty {
+  border-color: rgba(247, 237, 222, 0.2);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.04),
+      transparent 44%
+    ),
+    rgba(30, 24, 40, 0.16);
+  box-shadow:
+    inset 1px 1px rgba(255, 255, 255, 0.055),
+    inset -1px -1px rgba(7, 5, 11, 0.24);
+  pointer-events: auto;
+}
+
+.salah-mobile-drop-slot.salah-mobile-is-drop-target {
+  z-index: 2;
+  border-color: #f8e8bb;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(120, 216, 201, 0.28),
+      rgba(195, 163, 234, 0.28) 52%,
+      rgba(243, 203, 105, 0.24)
+    ),
+    rgba(37, 29, 49, 0.68);
+  box-shadow:
+    inset 2px 2px rgba(255, 255, 255, 0.18),
+    inset -2px -2px rgba(14, 9, 20, 0.34),
+    0 0 0 2px rgba(120, 216, 201, 0.2),
+    0 0 1rem rgba(195, 163, 234, 0.2);
+  transform: scale(1.025);
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon {
+  grid-template-rows: minmax(2.7rem, 1fr) auto auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(0.14rem, 0.65vh, 0.34rem) 0.1rem;
+}
+
+.salah-mobile-home-grid .salah-mobile-app-glyph {
+  align-self: center;
+  width: clamp(3rem, min(16vw, 9vh), 5.25rem);
+  max-width: 76%;
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon > strong {
+  font-size: clamp(0.62rem, 2.45vw, 0.82rem);
+}
+
+.salah-mobile-home-grid .salah-mobile-app-icon > small {
+  font-size: clamp(0.45rem, 1.75vw, 0.58rem);
+}
+
+.salah-mobile-app-dock {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(0.28rem, 0.75vh, 0.44rem)
+    clamp(0.35rem, 1.8vw, 0.72rem);
+  overflow: hidden;
+  border: 1px solid #a99bad;
+  border-radius: 1.12rem 0.36rem 0.68rem 0.22rem;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.025) 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(180deg, #665871 0 11%, #45394f 12% 100%);
+  box-shadow:
+    inset 2px 2px rgba(255, 255, 255, 0.2),
+    inset -2px -2px #211929,
+    0.24rem 0.3rem 0 rgba(10, 7, 15, 0.3),
+    0 -0.35rem 1rem rgba(12, 8, 18, 0.18);
+}
+
+.salah-mobile-app-dock::before {
+  position: absolute;
+  top: 0.28rem;
+  left: 50%;
+  width: min(5.5rem, 24%);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--mobile-aqua),
+    var(--mobile-violet),
+    var(--mobile-amber)
+  );
+  box-shadow: 0 1px rgba(17, 12, 24, 0.78);
+  content: "";
+  opacity: 0.88;
+  transform: translateX(-50%);
+}
+
+.salah-mobile-dock-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: clamp(0.18rem, 1.5vw, 0.58rem);
+  width: min(100%, 32rem);
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0.18rem 0 0;
+  list-style: none;
+  transition: padding-right 160ms ease;
+}
+
+.salah-mobile-app-dock.salah-mobile-is-editing
+  .salah-mobile-dock-grid {
+  padding-right: clamp(3.15rem, 13vw, 4rem);
+}
+
+.salah-mobile-drop-slot--dock {
+  min-width: 0;
+  min-height: 0;
+}
+
+.salah-mobile-dock-grid.salah-mobile-is-editing
+  .salah-mobile-drop-slot--dock:empty {
+  border: 1px dashed rgba(255, 248, 235, 0.2);
+  border-radius: 0.72rem 0.22rem 0.72rem 0.22rem;
+  background: rgba(20, 15, 28, 0.1);
+}
+
+.salah-mobile-dock-grid .salah-mobile-app-icon {
+  grid-template-rows: minmax(2.5rem, 1fr) auto;
+  gap: 0.08rem;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0.12rem 0.08rem 0.18rem;
+}
+
+.salah-mobile-dock-grid .salah-mobile-app-glyph {
+  align-self: center;
+  width: clamp(2.65rem, min(12.5vw, 7vh), 4rem);
+  max-width: 70%;
+}
+
+.salah-mobile-dock-grid .salah-mobile-app-icon > strong {
+  font-size: clamp(0.56rem, 2.2vw, 0.72rem);
+}
+
+.salah-mobile-dock-grid .salah-mobile-app-icon > small {
+  display: none;
+}
+
+.salah-mobile-done {
+  position: absolute;
+  top: 50%;
+  right: clamp(0.35rem, 1.5vw, 0.58rem);
+  z-index: 5;
+  min-width: clamp(2.85rem, 11vw, 3.6rem);
+  min-height: 2.35rem;
+  padding: 0 0.48rem;
+  border-radius: 0.62rem 0.2rem 0.62rem 0.2rem;
+  font-size: clamp(0.56rem, 2.1vw, 0.66rem);
+  transform: translateY(-50%);
+}
+
+.salah-mobile-done:active {
+  transform: translate(1px, calc(-50% + 1px));
+}
+
+.salah-mobile-app-icon.salah-mobile-is-selected {
+  border-color: rgba(255, 241, 218, 0.48);
+  background: rgba(42, 33, 54, 0.46);
+  box-shadow:
+    inset 1px 1px rgba(255, 255, 255, 0.08),
+    0 0 0 2px rgba(120, 216, 201, 0.11);
+}
+
+.salah-mobile-app-icon.salah-mobile-is-drag-source {
+  opacity: 0.13;
+  filter: grayscale(0.45) saturate(0.55);
+}
+
+.salah-mobile-app-grid.salah-mobile-is-editing
+  .salah-mobile-app-icon {
+  animation: none;
+  cursor: grab;
+  transform: none;
+}
+
+.salah-mobile-app-grid.salah-mobile-is-editing
+  .salah-mobile-app-icon:active {
+  cursor: grabbing;
+  transform: none;
+}
+
+.salah-mobile-app-grid.salah-mobile-is-editing
+  .salah-mobile-app-icon
+  .salah-mobile-app-glyph {
+  animation: salah-mobile-glyph-jiggle-a 190ms ease-in-out infinite
+    alternate;
+  transform-origin: 50% 70%;
+}
+
+.salah-mobile-app-grid.salah-mobile-is-editing
+  .salah-mobile-drop-slot:nth-child(even)
+  .salah-mobile-app-glyph {
+  animation-name: salah-mobile-glyph-jiggle-b;
+  animation-delay: -95ms;
+}
+
+.salah-mobile-app-grid.salah-mobile-is-editing
+  .salah-mobile-is-drag-source
+  .salah-mobile-app-glyph {
+  animation: none;
+}
+
+.salah-mobile-drag-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.salah-mobile-drag-ghost.salah-mobile-app-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  grid-template-rows: minmax(2.8rem, 1fr) auto auto;
+  width: var(--salah-mobile-drag-width);
+  height: var(--salah-mobile-drag-height);
+  min-height: 0;
+  margin: 0;
+  padding: clamp(0.2rem, 0.7vh, 0.36rem) 0.12rem;
+  border-color: rgba(255, 247, 232, 0.72);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.12),
+      transparent 44%
+    ),
+    rgba(42, 33, 54, 0.94);
+  box-shadow:
+    inset 1px 1px rgba(255, 255, 255, 0.15),
+    0.34rem 0.48rem 0 rgba(10, 7, 15, 0.3),
+    0 0.8rem 1.6rem rgba(9, 6, 13, 0.34);
+  opacity: 0.97;
+  transform: translate3d(
+      calc(
+        var(--salah-mobile-drag-x) -
+          var(--salah-mobile-drag-grab-x)
+      ),
+      calc(
+        var(--salah-mobile-drag-y) -
+          var(--salah-mobile-drag-grab-y)
+      ),
+      0
+    )
+    scale(1.055);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.salah-mobile-drag-ghost .salah-mobile-app-glyph {
+  align-self: center;
+  width: clamp(2.85rem, 12.5vw, 4.25rem);
+  max-width: 72%;
+}
+
+.salah-mobile-drag-ghost--dragging {
+  transition: none;
+}
+
+.salah-mobile-drag-ghost--settling,
+.salah-mobile-drag-ghost--returning {
+  opacity: 0.72;
+  transform: translate3d(
+      calc(
+        var(--salah-mobile-drag-x) -
+          var(--salah-mobile-drag-grab-x)
+      ),
+      calc(
+        var(--salah-mobile-drag-y) -
+          var(--salah-mobile-drag-grab-y)
+      ),
+      0
+    )
+    scale(1);
+  transition:
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 180ms ease;
+}
+
+/*
+ * The system controls deliberately have no selected/disabled appearance.
+ * Back, Home, and Recents are commands, not toggles, and every press remains
+ * tactile even when the current screen has nowhere new to go.
+ */
+.salah-mobile-system-nav > button,
+.salah-mobile-system-nav > button:disabled,
+.salah-mobile-system-nav > button[aria-current="page"] {
+  border-color: transparent;
+  background: transparent;
+  color: #31283a;
+  box-shadow: none;
+  cursor: pointer;
+  opacity: 1;
+  touch-action: manipulation;
+}
+
+.salah-mobile-system-nav > button:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+.salah-mobile-system-nav > button:hover {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.salah-mobile-system-nav > button:focus-visible {
+  border-color: #65586d;
+  background: rgba(244, 235, 222, 0.26);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .salah-mobile-system-nav > button:hover {
+    border-color: #65586d;
+    background: rgba(244, 235, 222, 0.26);
+  }
+}
+
+.salah-mobile-system-nav > button:active {
+  border-color: #5f5267;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(112, 211, 201, 0.44),
+      rgba(195, 154, 225, 0.4),
+      rgba(241, 199, 105, 0.36)
+    ),
+    rgba(200, 189, 183, 0.76);
+  box-shadow: inset 2px 2px rgba(37, 28, 45, 0.28);
+  transform: translate(1px, 1px);
+}
+
+@media (max-width: 390px) {
+  .salah-mobile-os {
+    --mobile-home-gutter: 0.48rem;
+    --mobile-home-gap: 0.36rem;
+    --mobile-dock-height: clamp(4.8rem, 12.5vh, 5.75rem);
+  }
+
+  .salah-mobile-greeting-notification {
+    min-height: 4.85rem;
+    padding: 0.5rem;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-profile-mark {
+    width: 2.85rem;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-replay {
+    width: 2.15rem;
+    min-width: 2.15rem;
+    min-height: 2.15rem;
+    padding-inline: 0.28rem;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-replay-label {
+    display: none;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-replay-icon {
+    font-size: 0.78rem;
+  }
+
+  .salah-mobile-home-grid {
+    gap: 0.1rem;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-glyph,
+  .salah-mobile-drag-ghost .salah-mobile-app-glyph {
+    width: clamp(2.65rem, min(15vw, 8.5vh), 3.8rem);
+  }
+
+  .salah-mobile-dock-grid {
+    gap: 0.08rem;
+  }
+
+  .salah-mobile-dock-grid .salah-mobile-app-glyph {
+    width: clamp(2.35rem, min(12vw, 6.5vh), 3rem);
+  }
+}
+
+@media (min-width: 600px) and (orientation: portrait) {
+  .salah-mobile-os {
+    --mobile-home-gutter: 1rem;
+    --mobile-home-gap: 0.8rem;
+    --mobile-dock-height: clamp(6.2rem, 12vh, 8rem);
+  }
+
+  .salah-mobile-greeting-notification {
+    width: min(100%, 46rem);
+    justify-self: center;
+  }
+
+  .salah-mobile-home-shortcuts {
+    width: min(100%, 46rem);
+    justify-self: center;
+  }
+
+  .salah-mobile-app-dock {
+    width: min(100%, 46rem);
+    justify-self: center;
+  }
+}
+
+@media (max-height: 650px) and (orientation: portrait) {
+  .salah-mobile-os {
+    --mobile-home-gap: 0.3rem;
+    --mobile-dock-height: 4.55rem;
+  }
+
+  .salah-mobile-greeting-notification {
+    min-height: 4.35rem;
+    padding-block: 0.38rem;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-profile-mark {
+    width: 2.55rem;
+  }
+
+  .salah-mobile-greeting-notification
+    .salah-mobile-profile-copy
+    > span {
+    display: none;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-glyph {
+    width: clamp(2.35rem, min(13vw, 8vh), 3.2rem);
+  }
+
+  .salah-mobile-dock-grid .salah-mobile-app-glyph {
+    width: clamp(2.15rem, min(11vw, 6vh), 2.7rem);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .salah-mobile-os {
+    --mobile-home-gutter: 0.5rem;
+    --mobile-home-gap: 0.5rem;
+    --mobile-dock-height: clamp(4.25rem, 20vh, 5rem);
+  }
+
+  .salah-mobile-home {
+    grid-template-columns: minmax(12rem, 0.72fr) minmax(18rem, 1.28fr);
+    grid-template-rows: minmax(0, 1fr) var(--mobile-dock-height);
+    gap: 0.5rem 0.7rem;
+    align-items: stretch;
+    width: min(100%, 70rem);
+    padding:
+      var(--mobile-home-gutter)
+      max(var(--mobile-home-gutter), env(safe-area-inset-right))
+      var(--mobile-home-gutter)
+      max(var(--mobile-home-gutter), env(safe-area-inset-left));
+  }
+
+  .salah-mobile-greeting-notification {
+    grid-column: 1;
+    grid-row: 1;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: center;
+    align-self: stretch;
+    min-height: 0;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-profile-mark {
+    width: clamp(2.6rem, 14vh, 3.55rem);
+  }
+
+  .salah-mobile-greeting-notification
+    .salah-mobile-profile-copy
+    > span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .salah-mobile-greeting-notification .salah-mobile-replay {
+    grid-column: 1 / -1;
+    width: fit-content;
+    max-width: min(100%, 5.25rem);
+    min-height: 1.8rem;
+    justify-self: end;
+  }
+
+  .salah-mobile-home-shortcuts {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .salah-mobile-home-grid {
+    width: 100%;
+    height: 100%;
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-glyph {
+    width: clamp(2.3rem, min(10vw, 13vh), 3.5rem);
+  }
+
+  .salah-mobile-home-grid .salah-mobile-app-icon > small {
+    display: none;
+  }
+
+  .salah-mobile-app-dock {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+  }
+
+  .salah-mobile-dock-grid {
+    width: min(100%, 34rem);
+  }
+
+  .salah-mobile-dock-grid .salah-mobile-app-icon {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    justify-items: start;
+    padding-inline: 0.3rem;
+  }
+
+  .salah-mobile-dock-grid .salah-mobile-app-glyph {
+    width: clamp(2.1rem, min(7vw, 13vh), 3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .salah-mobile-app-grid.salah-mobile-is-editing
+    .salah-mobile-app-glyph {
+    animation: none !important;
+  }
+
+  .salah-mobile-greeting-notification--queued {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .salah-mobile-greeting-notification--entering,
+  .salah-mobile-greeting-notification--settled {
+    visibility: visible;
+    opacity: 1;
+    animation: none !important;
+    transform: none;
+  }
+
+  .salah-mobile-drop-slot,
+  .salah-mobile-drag-ghost--settling,
+  .salah-mobile-drag-ghost--returning {
+    transition-duration: 1ms !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-content.salah-mobile-os,
+  .hero-content.salah-mobile-os * {
+    cursor: var(--cursor-finger), auto !important;
+  }
+
+  .hero-content.salah-mobile-os :is(
+      button,
+      a[href],
+      [role="button"]
+    ) {
+    cursor: var(--cursor-finger), pointer !important;
+  }
+}

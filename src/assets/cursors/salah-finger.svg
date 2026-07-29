@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <defs>
+    <linearGradient id="finger-prism" x1="7" y1="2" x2="29" y2="33" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff8ea"/>
+      <stop offset=".22" stop-color="#82e8de"/>
+      <stop offset=".46" stop-color="#c5a3ed"/>
+      <stop offset=".7" stop-color="#ef8d98"/>
+      <stop offset="1" stop-color="#f1ce72"/>
+    </linearGradient>
+    <linearGradient id="finger-cuff" x1="11" y1="27" x2="27" y2="34" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6fd9d0"/>
+      <stop offset=".5" stop-color="#bd91df"/>
+      <stop offset="1" stop-color="#efc769"/>
+    </linearGradient>
+  </defs>
+  <g opacity=".72">
+    <path d="M12.1 3.5c-1.8 0-3 1.3-3 3.1v12l-2-1.8c-1.5-1.3-3.7-1.2-4.9.3-1 1.2-.9 3 .1 4.2l7.9 9.1V34h16.7v-3.2c2.2-2.4 3.1-5.4 3.1-8.7v-4.7c0-1.8-1.3-3.1-3-3.1-.9 0-1.8.4-2.3 1.1-.4-1.5-1.6-2.5-3.1-2.5-1 0-1.8.4-2.4 1.1-.5-1.3-1.7-2.1-3.1-2.1-.4 0-.8.1-1.1.2V6.6c.1-1.8-1.1-3.1-2.9-3.1Z" fill="#171321" opacity=".5" transform="translate(1.5 1.5)"/>
+    <path d="M10.6 2c-1.8 0-3 1.3-3 3.1v12l-2-1.8C4.1 14 1.9 14.1.7 15.6c-1 1.2-.9 3 .1 4.2l7.9 9.1v3.6h16.7v-3.2c2.2-2.4 3.1-5.4 3.1-8.7v-4.7c0-1.8-1.3-3.1-3-3.1-.9 0-1.8.4-2.3 1.1-.4-1.5-1.6-2.5-3.1-2.5-1 0-1.8.4-2.4 1.1-.5-1.3-1.7-2.1-3.1-2.1-.4 0-.8.1-1.1.2V5.1c.1-1.8-1.1-3.1-2.9-3.1Z" fill="url(#finger-prism)" stroke="#2d2440" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M8.7 27.7h16.7v4.8H8.7Z" fill="url(#finger-cuff)" stroke="#2d2440" stroke-width="1.6"/>
+    <path d="M10.5 4.9v14.4m4.5-6.7v7m4.3-5.4v6.1m4-4.2v5.2" fill="none" stroke="#fff9ed" stroke-width=".9" stroke-linecap="round" opacity=".68"/>
+    <path d="M4.7 17.6c1.9 1.5 3.6 3.3 5 5.4" fill="none" stroke="#fff9ed" stroke-width=".8" stroke-linecap="round" opacity=".52"/>
+  </g>
+</svg>

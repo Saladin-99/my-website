@@ -3,27 +3,50 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 export const PALETTE = {
-  background: "#08050d",
-  floor: "#100918",
-  shadow: "#160c21",
-  deep: "#21132f",
-  body: "#38224b",
-  mid: "#5d4777",
-  light: "#907caf",
-  highlight: "#cfc2ed",
-  line: "#c4b5ff",
-  glow: "#eee8ff",
+  background: "#070611",
+  floor: "#20172b",
+  shadow: "#161426",
+  deep: "#242039",
+  body: "#4c6eb2",
+  mid: "#31988f",
+  light: "#dcc99b",
+  highlight: "#ba578f",
+  line: "#e9e1f2",
+  glow: "#e8ddca",
+  graphite: "#292640",
+  ivory: "#dcc99b",
+  silver: "#aab4c2",
+  darkTeal: "#255f66",
+  plum: "#43345f",
+  cobalt: "#486bb0",
+  coral: "#d85e64",
+  orange: "#e38b4d",
+  yellow: "#dcc052",
+  lime: "#78ab62",
+  teal: "#31988f",
+  cyan: "#4ea8c0",
+  blue: "#4c6eb2",
+  violet: "#7957a6",
+  magenta: "#ba578f",
+  monitorBezel: "#514072",
+  chairMagenta: "#9e456d",
+  sofaCoral: "#b94f5c",
+  sofaWarm: "#c36a52",
+  tableViolet: "#55417e",
+  rugTeal: "#275e64",
+  leafGreen: "#6e9f5b",
+  mugTeal: "#3b9f96",
 };
 
-const clampRadius = (size, requestedRadius) => {
-  const shortestSide = Math.min(...size);
+const clampRadius = (width, height, depth, requestedRadius) => {
+  const shortestSide = Math.min(width, height, depth);
   return Math.min(requestedRadius, shortestSide * 0.46);
 };
 
 function ModelMaterial({
   color = PALETTE.body,
-  emissive = PALETTE.shadow,
-  emissiveIntensity = 0.025,
+  emissive = PALETTE.background,
+  emissiveIntensity = 0.01,
   shininess = 42,
   flatShading = false,
   transparent = false,
@@ -34,7 +57,7 @@ function ModelMaterial({
       color={color}
       emissive={emissive}
       emissiveIntensity={emissiveIntensity}
-      specular={PALETTE.highlight}
+      specular={PALETTE.glow}
       shininess={shininess}
       flatShading={flatShading}
       transparent={transparent}
@@ -59,18 +82,19 @@ export function BeveledBox({
   receiveShadow = true,
   children,
 }) {
-  const safeRadius = clampRadius(size, radius);
+  const [width, height, depth] = size;
+  const safeRadius = clampRadius(width, height, depth, radius);
   const showEdges = edgeOpacity >= 0.06;
   const geometry = useMemo(
     () =>
       new RoundedBoxGeometry(
-        size[0],
-        size[1],
-        size[2],
+        width,
+        height,
+        depth,
         segments,
         Math.max(safeRadius, 0.002),
       ),
-    [safeRadius, segments, size],
+    [depth, height, safeRadius, segments, width],
   );
   const edges = useMemo(
     () => (showEdges ? new THREE.EdgesGeometry(geometry, 32) : null),
